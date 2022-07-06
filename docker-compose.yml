@@ -29,4 +29,5 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
       - QT_X11_NO_MITSHM=1
 
+## amd radeon 은 environment의 ROS_MASTER_URI=http://localhost:11311, DISPLAY=$DISPLAY만 적용하면 됨
 ## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것

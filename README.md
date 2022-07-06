@@ -3,6 +3,10 @@ docker로 ros 실행하기
 
 ## ros melodic / noetic (docker)
 1. melodic 버전 ros 입니다
+- melodic 버전에 .env_example 추가: .env 로 카피를 한 다음에 사용 (유저 변경등..비번변경)  
+```
+cp .env_example .env
+```
 
 2. noetic ros 버전 추가 되었습니다. noetic 버전을 받으려면 -b 옵션으로 클론하세요 
 ```
