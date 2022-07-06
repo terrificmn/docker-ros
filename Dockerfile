@@ -28,7 +28,23 @@ RUN rosdep init \
   && rosdep fix-permissions
 
 RUN apt-get update && \
-  apt-get install -y software-properties-common
+  apt-get install -y software-properties-common sudo 
 
-RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> /root/.bashrc && \
-  echo "source /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
+# user 만드는 것이랑 HOME 및 USER 지정
+## HOME 지정은 env에서
+## Create user "docker_noetic"
+RUN useradd -m docker_melodic && \
+    echo "docker_melodic:docker_melodic" | chpasswd && adduser docker_melodic sudo && \
+    ## adduser {비번} sudo 임
+    ## cp /root/.bashrc ${HOME} && \  ## bashrc 생기는 지 확인 필요
+    ## mkdir ${HOME}/catkin_ws && \ ##docker-compose 에서 volumns연결시 만듬
+    chown -R --from=root docker_melodic /home/docker_melodic
+
+######
+USER docker_melodic
+WORKDIR /home/docker_melodic
+##WORKDIR에서 위치
+###############
+
+RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> /home/docker_melodic/.bashrc && \
+  echo "source /home/docker_melodic/docker_ws/devel/setup.bash" >> /home/docker_melodic/.bashrc

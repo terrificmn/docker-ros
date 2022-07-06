@@ -7,8 +7,8 @@ services:
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
     volumes:
-      - ./catkin_ws:/root/catkin_ws   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
-      - ~/.ssh:/root/.ssh  # 홈디렉토리에 있는 .ssh 연결
+      - ./docker_ws:/home/docker_melodic/docker_ws   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+      - ~/.ssh:/home/docker_melodic/.ssh  # 홈디렉토리에 있는 .ssh 연결
       - /tmp/.X11-unix:/tmp/.X11-unix   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /dev:/dev  #usb등의 장치 연결
     ports:
@@ -25,6 +25,8 @@ services:
     environment:
       - ROS_MASTER_URI=http://localhost:11311
       - DISPLAY=$DISPLAY
-      # - QT_X11_NO_MITSHM=1 # 이제 보니 Nvidia 전용인 듯하다
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - QT_X11_NO_MITSHM=1
 
 ## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
