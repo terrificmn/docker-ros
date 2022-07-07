@@ -20,6 +20,7 @@ services:
     tty: true
     devices:
       - /dev:/dev
+
     group_add:
       - video
     environment:
