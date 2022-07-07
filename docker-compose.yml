@@ -7,9 +7,10 @@ services:
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
     volumes:
-      - ./docker_ws:/home/docker_melodic/docker_ws   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
-      - ~/.ssh:/home/docker_melodic/.ssh  # 홈디렉토리에 있는 .ssh 연결
-      - /tmp/.X11-unix:/tmp/.X11-unix   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
+      - ./${WORKSPACE}:${HOME}${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+      - ~/.ssh:${HOME}/.ssh  # 홈디렉토리에 있는 .ssh 연결
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
       - /dev:/dev  #usb등의 장치 연결
     ports:
       - "11311:11311"
@@ -18,9 +19,10 @@ services:
     stdin_open: true
     privileged: true
     tty: true
+    #runtime: nvidia  ## nivia 용 (apt install -y nvidia-docker2 이 설치 후 docker재시작)
+    #gpus: all ## runtime gpus 되는지 2개 확인해볼 것
     devices:
       - /dev:/dev
-
     group_add:
       - video
     environment:
@@ -28,7 +30,8 @@ services:
       - DISPLAY=$DISPLAY
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
-      - QT_X11_NO_MITSHM=1
+      - QT_X11_NO_MITSHM=1 #nvidia
+      - XAUTHORITY=/tmp/.docker.xauth
 
 ## amd radeon 은 environment의 ROS_MASTER_URI=http://localhost:11311, DISPLAY=$DISPLAY만 적용하면 됨
 ## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
