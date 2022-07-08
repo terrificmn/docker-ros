@@ -15,11 +15,12 @@ services:
     ports:
       - "11311:11311"
     # command:
-    #   - roscore  ## command가 안먹힘 좀 더 테스트 필요
+    #  - roscore  ## command가 안먹힘 좀 더 테스트 필요
     stdin_open: true
     privileged: true
     tty: true
-    runtime: nvidia  ## nivia 용 (apt install -y nvidia-docker2 이 설치 후 docker재시작)
+    ## nivia 용 (apt install -y nvidia-docker2 이 설치 후 docker재시작) 없으면 rutime nvidia 인식 못함
+    runtime: nvidia  
     devices:
       - /dev:/dev
     group_add:
@@ -32,5 +33,5 @@ services:
       - QT_X11_NO_MITSHM=1 #nvidia
       - XAUTHORITY=/tmp/.docker.xauth
 
-## amd radeon 은 environment의 ROS_MASTER_URI=http://localhost:11311, DISPLAY=$DISPLAY만 적용하면 됨
-## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
+## Nvidia 그래픽 카드 이용 시 사용 (특히 rviz 안될 때) -  nvidia-docker2 필요함(apt로 설치)
+# X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
