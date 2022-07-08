@@ -52,7 +52,7 @@ RUN useradd -m $USER && \
     ## mkdir ${HOME}/catkin_ws && \ ##docker-compose 에서 volumns연결시 만듬
     #chown -R ${USER}:${USER} ${USERHOME}
 
-## set 유저, 시작 위치 
+## set 유저, 시작 위치 ## ARG랑 호환 안됨
 USER docker_melodic
 WORKDIR /home/docker_melodic
 
@@ -62,7 +62,7 @@ WORKDIR /home/docker_melodic
 #ENTRYPOINT ["/home/docker_melodic/entrypoint.sh"]
 ## permision 에러 해결해야함
 
-RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> /home/docker_melodic/.bashrc
+#RUN echo 'source /opt/ros/melodic/setup.bash' >> /home/docker_melodic/.bashrc
 #CMD ["echo" "source /opt/ros/$ROS_DISTRO/setup.bash" ">>" "/home/docker_melodic/.bashrc"]
 
 # 빌드까지는 완료
