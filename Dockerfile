@@ -35,7 +35,7 @@ ARG HOME=/home/docker_melodic
 ## Create user "docker_melodic"
 RUN useradd -m $USER  && \
     ## password
-    echo "$USER:'pass'" | chpasswd && \
+    echo "$USER:pass" | chpasswd && \
     ## root privileges, (sudo install필요)
     adduser $USER sudo && \
     cp /root/.bashrc $HOME
