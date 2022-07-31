@@ -3,37 +3,66 @@ docker로 ros 실행하기
 
 ## ros melodic / noetic (docker)
 1. melodic 버전 ros 입니다
-- melodic 버전에 .env_example 추가: .env 로 카피를 한 다음에 사용 (유저 변경등..비번변경)  
+- melodic 버전에 .env_example 추가: .env 로 카피를 한 다음에 사용  
+(유저명, catkin_ws 디렉토리 변경등)  
 ```
 cp .env_example .env
 ```
+melodic에서 nvidia그래픽카드를 사용할 경우 호스트 컴퓨터의 자원을 제대로 사용하지 못하는 경우가 생겨서  
+(nvidia 그래픽 드라이버를 사용 못하는 듯 함)   
+
+nvidia/cudagl:11.3.1-devel-ubuntu18.04 이미지를 이용해서 build   
+(ros이미지에서 변경함)  
+rviz, gazebo 등 실행 잘 됨
+
 
 2. noetic ros 버전 추가 되었습니다. noetic 버전을 받으려면 -b 옵션으로 클론하세요 
 ```
-git clone -b https://github.com/terrificmn/docker-ros.git
+git clone -b noetic https://github.com/terrificmn/docker-ros.git
 ```
+업데이트가 필요하지만 아직 초기 버전입니다 
 
-3. Dockerfile 내의 Mesa libraries 설치는 환경에 따라 삭제 가능 (현재 AMD용으로 작성되었습니다)
 
-4. 현재는 도커 컨테이너를 root 권한으로 사용하기 때문에 /root/.bashrc 생성 후 사용함 ~~(일반 유저로 하는 것은 추후 업데이트할 예정)~~
+3. amd 라데온 버전 ros - melodic 버전 추가 되었습니다. 
+```
+git clone -b melodic-radeon https://github.com/terrificmn/docker-ros.git
+```
+amd 그래픽 사용할 경우 사용~   상위 버전 그래픽카드는 호환여부는 모르겠음  
+rviz, gazebo등 잘 실행 됨   
 
-5. noetic 버전에는 새로 root가 아닌 user를 추가했습니다. 자세한 사항은 아래를 참고
+4. noetic 버전에는 새로 root가 아닌 user를 추가했습니다. 자세한 사항은 아래를 참고
 
-6. docker-compose.yml 파일의 volumes 옵션의 catkin_ws 경로를 원하는 곳으로 수정가능
+5. docker-compose.yml 파일의 volumes 옵션의 catkin_ws 경로를 원하는 곳으로 수정가능  
+.env_example에서 복사한 .env 파일에서 변경해줍니다  
 
-5. docker, docker-compose 가 설치되어 있어야 합니다.  
+6. docker, docker-compose 가 설치되어 있어야 합니다.  
 [도커엔진 공식 사이트 - CentOS 기준](https://docs.docker.com/engine/install/centos/)  
 - 리눅스 배포판에 따라서 왼쪽 메뉴에서 선택하면 됩니다.  
 - docker-compose 도 해당 사이트 왼쪽 메뉴에서 찾을 수 있습니다
 
-6. 실행방법 (Melodic)  
-먼저 클론을 받은 후에 catkin_ws를 생성하는데 원하는 위치에 만들어 주면 됩니다.  
-현재 디렉토리 안에다가 만든다고 하면 아래 처럼 사용 가능   
+7. 실행방법 (Melodic)  
+~~먼저 클론을 받은 후에 catkin_ws를 생성하는데 원하는 위치에 만들어 주면 됩니다.~~    
+현재 docker_ws 가 (catkin_ws로 기본 디렉토리명으로 되어 있음)   
+원하는 이름으로 변경 (.env파일에서)   
+
+안타깝게도 .env파일의 환경변수가 Dockerfile에서는 적용이 안되므로   
+그리고 ARG도 build할 때 RUN 키워드 명령어에서만 작동하므로 ENV랑은 또 호환이 안되므로    
+새롭게 작동할 방법을 찾아 업데이트 예정입니다  
+
+그래서 만약 유저명, ws디렉토리명을 바꿨다면 (.env파일에서)
+
+Dockerfile 의 아래부분을 같은 내용으로 변경해주세요   
+``` 
+ARG USER=newuser
+ARG HOME=/home/newuser
+... 생략...
+
+USER newuser
+WORKDIR /home/newuser
+```
+
 [(*noetic 버전은 아래 실행 방법을 참고 하세요)](#noetic-실행방법)
-```
-cd ~/docker-ros
-mkdir catkin_ws
-```
+
 
 만약 다른 경로에 만들었다면 docker-compose.yml 파일의 volumes 옵션부분을 바꿔줘야함  
 예:
