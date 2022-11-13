@@ -7,8 +7,8 @@ services:
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
     volumes:
-      - ./docker_ws:${HOME}/docker_ws   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
-      - ~/.ssh:/root/.ssh  # 홈디렉토리에 있는 .ssh 연결
+      - ./${WORKSPACE}:${USERHOME}/${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+      - ~/.ssh:${USERHOME}/.ssh  # 홈디렉토리에 있는 .ssh 연결
       - /tmp/.X11-unix:/tmp/.X11-unix   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /dev:/dev  #usb등의 장치 연결
     ports:
