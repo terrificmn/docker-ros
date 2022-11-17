@@ -15,7 +15,7 @@ RUN apt-get install --no-install-recommends -y \
 
 # rsodep 최초실행  init 및 update만 하면 sudo 로 하라는 에러발생
 # 메뉴얼에도 처음에는 init을 해주라고 되어 있는데 뭔가 업데이트 되었는지 init을 하면 에러발생
-# 주석처리하고 사용
+# 주석처리하고 사용 (특히 Tinker Board2 )
 # RUN rosdep init \
 #   && rosdep update --rosdistro $ROS_DISTRO
 
@@ -23,12 +23,15 @@ RUN apt-get update && \
   apt-get install -y software-properties-common \ 
   && rm -rf /var/lib/apt/lists/*
 
-## build (RUN 컨맨드에서 사용. .env는 안됨)
+## build (RUN 컨맨드에서 사용. .env는 사용 못하므로 ARG로..)
 ARG USER=docker_noetic
 ARG HOME=/home/docker_noetic
+ENV USER=${USER}
+ENV HOME=${HOME}
 
 ## user 만드는 것이랑 HOME 및 USER 지정
-## Create user "docker_noetic"
+## Create user "docker_noetic"  
+## pass워드는 ARG/ENV로 설정해도 안 됨-비번이틀리게됨 - 하드코딩은 됨;;(Nov17 2022) -- 추후 다른 방법을 시도?!
 RUN useradd -m $USER && \
     ## password :이하가 password
     echo "$USER:pass" | chpasswd && \
