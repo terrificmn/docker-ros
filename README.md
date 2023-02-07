@@ -67,3 +67,7 @@ docker exec -it ros bash
 sudo chown $USER:root -R docker_ws
 ```
 
+## 추가
+rosbridge pkg, web pkg 추가
+
+

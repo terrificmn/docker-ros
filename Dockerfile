@@ -21,6 +21,9 @@ RUN apt-get install --no-install-recommends -y \
 
 RUN apt-get update && \
   apt-get install -y software-properties-common \ 
+  python3-catkin-tools \
+  ros-noetic-rosbridge-server \ 
+  ros-noetic-web-video-server \
   && rm -rf /var/lib/apt/lists/*
 
 ## build (RUN 컨맨드에서 사용. .env는 안됨)

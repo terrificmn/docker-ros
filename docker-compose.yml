@@ -12,7 +12,10 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /dev:/dev  #usb등의 장치 연결
     ports:
-      - "11311:11311"
+      - "11311:11311" #ros
+      - "9090:9090" #rosbridge
+      - "8000:8000" #web server
+      - "11315:11315" #web_video
     command:
       - roscore  
     stdin_open: true
@@ -25,6 +28,5 @@ services:
     environment:
       - ROS_MASTER_URI=http://localhost:11311
       - DISPLAY=$DISPLAY
-      # - QT_X11_NO_MITSHM=1 # 이제 보니 Nvidia 전용인 듯하다
 
-## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
+## xhost +가 필요할 수도 있음
