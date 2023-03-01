@@ -1,0 +1,7 @@
+# test for web server
+FROM python:3.8
+ARG WEB_HOME=/home/docker_noetic/docker_ws/src/web_motor
+EXPOSE 8000
+WORKDIR $WEB_HOME
+ENV PYTHONUNBUFFERED=1
+CMD python3 -m http.server
