@@ -14,8 +14,9 @@ services:
       - /dev:/dev  #usb등의 장치 연결
     ports:
       - "11311:11311"
-    # command:
-    #  - roscore  ## command가 안먹힘 좀 더 테스트 필요
+    # command: 
+    #   - roscore
+    restart: always
     stdin_open: true
     privileged: true
     tty: true

@@ -24,11 +24,11 @@ RUN apt-get install --no-install-recommends -y \
 
 # rsodep 최초실행  init 및 update만 하면 sudo 로 하라는 에러발생
 RUN rosdep init \
-  && rosdep update \
-  && rosdep fix-permissions
+    && rosdep update \
+    && rosdep fix-permissions
 
 RUN apt-get update && \
-  apt-get install -y software-properties-common sudo   
+    apt-get install -y software-properties-common sudo   
 
 # build시 사용 // RUN에서
 ARG USER=docker_melodic
@@ -48,8 +48,10 @@ WORKDIR /home/docker_melodic
 
 ## 셋업 bash 부분이 
 RUN echo 'source /opt/ros/melodic/setup.bash' >> /home/docker_melodic/.bashrc
-RUN echo 'source /home/docker_melodic/.bashrc'
+RUN echo 'source /home/docker_melodic/docker_ws/devel/setup.bash' >> /home/docker_melodic/.bashrc
 
-# 잘 되지만- roscore 안됨;;
-#  OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "roscore": executable file not found in $PATH: unknown
+COPY ./ros_entrypoint.sh ./
+## shell script를 실행하려면 실행권한을 줘야하지만 현재 일반 유저로 되어 있어서 스킵 후 host com 쪽에서 권한 생성
+ENTRYPOINT ["./ros_entrypoint.sh"]  
 
+# 잘 되지만- roscore 안됨;; // noetic에서는 가능하나, melodic에서는 compose의 커맨드가 잘 안되는 듯
