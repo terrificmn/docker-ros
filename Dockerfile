@@ -1,4 +1,4 @@
-## ROS melodic (amd radeon 문제 없음)
+## ROS noetic (amd radeon 문제 없음)
 FROM ros:noetic-ros-base-focal
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -51,5 +51,10 @@ RUN useradd -m $USER  && \
 USER $USER
 WORKDIR $HOME
 
-RUN echo 'source /opt/ros/melodic/setup.bash' >> ${HOME}/.bashrc
+RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/docker_ws/devel/setup.bash" >> ${HOME}/.bashrc
+
+# 사용하려면 주석해제
+# COPY ./entrypoint_roslaunch.sh ./
+# ## host컴의 파일 그대로 사용 (권한도 +x 해줄것)
+# ENTRYPOINT ["./entrypoint_roslaunch.sh"]
