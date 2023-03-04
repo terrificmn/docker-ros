@@ -14,10 +14,10 @@ services:
     ports:
       - "11311:11311" #ros
       - "9090:9090" #rosbridge
-      - "8000:8000" #web server
       - "11315:11315" #web_video
-    command:
-      - roscore  
+    # command:
+    #   - roscore
+    restart: always
     stdin_open: true
     privileged: true
     tty: true
@@ -28,5 +28,17 @@ services:
     environment:
       - ROS_MASTER_URI=http://localhost:11311
       - DISPLAY=$DISPLAY
+
+  py-web:
+    container_name: py-web
+    build:
+      context: .
+      dockerfile: DockerfilePy
+    volumes:
+      - ./${WORKSPACE}:${USERHOME}/${WORKSPACE} 
+    ports:
+      - "8000:8000"
+    environment:
+      - "PYTHONUNBUFFERED=1"
 
 ## xhost +가 필요할 수도 있음

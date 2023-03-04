@@ -29,22 +29,35 @@ RUN apt-get update && \
 ## build (RUN 컨맨드에서 사용. .env는 사용 못하므로 ARG로..)
 ARG USER=docker_noetic
 ARG HOME=/home/docker_noetic
-ENV USER=${USER}
-ENV HOME=${HOME}
 
 ## user 만드는 것이랑 HOME 및 USER 지정
 ## Create user "docker_noetic"  
-## pass워드는 ARG/ENV로 설정해도 안 됨-비번이틀리게됨 - 하드코딩은 됨;;(Nov17 2022) -- 추후 다른 방법을 시도?!
+## pass워드는 ARG/ENV로 설정해도 안 됨-비번이틀리게됨 - 하드코딩은 됨;;(Nov17 2022) 
+## ARG에 직접 값을 넣어도 안됨;;-- 패스워드 바꾸려면 컨테이너에 직접 docker exec로 실행해서 바꾸기;;;
 RUN useradd -m $USER && \
     ## password :이하가 password
-    echo "$USER:pass" | chpasswd && \
+    echo $USER:pass | chpasswd && \
     ## root privileges
     adduser $USER sudo && \
     cp /root/.bashrc $HOME
+
+## GPIO lib install
+ARG GPIO_FILE=gpio_lib_c_backup.tar.xz
+WORKDIR ${HOME}
+COPY ./docker_ws/${GPIO_FILE} ./
+RUN mv ./${GPIO_FILE} /usr/local/share/ 
+WORKDIR /usr/local/share
+RUN tar -xvf ${GPIO_FILE}
+WORKDIR /usr/local/share/gpio_lib_c_rk3399
+RUN ./build
 
 ## .env와는 호환이 안됨. 위의 ARG 변수 그대로 사용
 USER $USER
 WORKDIR $HOME
 
-RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> /home/docker_noetic/.bashrc
-# echo "source ${HOME}/docker_ws/devel/setup.bash" >> /root/.bashrc
+RUN echo 'source /opt/ros/noetic/setup.bash' >> ${HOME}/.bashrc
+RUN echo "source ${HOME}/docker_ws/devel/setup.bash" >> ${HOME}/.bashrc
+
+COPY ./entrypoint_roslaunch.sh ./
+# ## host컴의 파일 그대로 사용 (권한도 +x 해줄것: COPY가 권한까지도 복사)
+ENTRYPOINT ["./entrypoint_roslaunch.sh"]
