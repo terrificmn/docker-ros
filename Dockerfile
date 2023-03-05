@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     ros-noetic-desktop-full
 
-RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash'
+RUN echo 'source /opt/ros/noetic/setup.bash'
 
 RUN apt-get install --no-install-recommends -y \
     build-essential \
@@ -36,10 +36,8 @@ RUN apt-get update && \
 ## build (RUN 컨맨드에서 사용. .env는 사용 못하므로 ARG로..)
 ARG USER=docker_noetic
 ARG HOME=/home/docker_noetic
-ENV USER=${USER}
-ENV HOME=${HOME}
 
-## Create user "docker_melodic"
+## Create user "docker_noetic" ## 비번은 ARG가 잘 설정이 안되서 직접 exec로 실행하기
 RUN useradd -m $USER  && \
     ## password
     echo "$USER:pass" | chpasswd && \
@@ -51,7 +49,7 @@ RUN useradd -m $USER  && \
 USER $USER
 WORKDIR $HOME
 
-RUN echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> ${HOME}/.bashrc
+RUN echo 'source /opt/ros/noetic/setup.bash' >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/docker_ws/devel/setup.bash" >> ${HOME}/.bashrc
 
 # 사용하려면 주석해제

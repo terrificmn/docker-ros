@@ -16,7 +16,7 @@ services:
       - "9090:9090" #rosbridge
       - "11315:11315" #web_video
     command:
-      - roscore 
+      - roscore
     restart: always
     stdin_open: true
     privileged: true
