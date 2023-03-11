@@ -15,8 +15,9 @@ services:
       - "11311:11311" #ros
       - "9090:9090" #rosbridge
       - "11315:11315" #web_video
-    # command:
-    #   - roscore
+    # command: 
+      # - roslaunch servo_ros servo_ros_bridge_web.launch  # not work at all
+      # - roscore
     restart: always
     stdin_open: true
     privileged: true

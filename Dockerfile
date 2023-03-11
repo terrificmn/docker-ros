@@ -42,9 +42,9 @@ RUN useradd -m $USER && \
     cp /root/.bashrc $HOME
 
 ## GPIO lib install
-ARG GPIO_FILE=gpio_lib_c_backup.tar.xz
+ARG GPIO_FILE=gpio_lib_c.tar.xz
 WORKDIR ${HOME}
-COPY ./docker_ws/${GPIO_FILE} ./
+COPY ./lib_tar/${GPIO_FILE} ./
 RUN mv ./${GPIO_FILE} /usr/local/share/ 
 WORKDIR /usr/local/share
 RUN tar -xvf ${GPIO_FILE}
@@ -55,9 +55,11 @@ RUN ./build
 USER $USER
 WORKDIR $HOME
 
-RUN echo 'source /opt/ros/noetic/setup.bash' >> ${HOME}/.bashrc
+RUN echo "source /opt/ros/noetic/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/docker_ws/devel/setup.bash" >> ${HOME}/.bashrc
 
+## dev일 경우에는 docker-comopse의 command 사용해서 roscore가 편함
+## 단, roslaunch 는 COPY ENTRYPOINT 사용할 것
 COPY ./entrypoint_roslaunch.sh ./
 # ## host컴의 파일 그대로 사용 (권한도 +x 해줄것: COPY가 권한까지도 복사)
 ENTRYPOINT ["./entrypoint_roslaunch.sh"]
