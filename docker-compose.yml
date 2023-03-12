@@ -39,6 +39,7 @@ services:
       - ./${WORKSPACE}:${USERHOME}/${WORKSPACE} 
     ports:
       - "8000:8000"
+    restart: always
     environment:
       - "PYTHONUNBUFFERED=1"
 
