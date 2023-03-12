@@ -16,10 +16,12 @@ services:
       - "9090:9090" #rosbridge
       - "11315:11315" #web_video
     command:
-      - roscore
+      ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
+      # - roscore
+
     restart: always
     stdin_open: true
-    privileged: true
+    privileged: true  
     tty: true
     devices:
       - /dev:/dev
@@ -30,17 +32,17 @@ services:
       - DISPLAY=$DISPLAY
   
   # test web 사용하려면 주석해제
-  # py-web:
-  #   container_name: py-web
-  #   build:
-  #     context: .
-  #     dockerfile: DockerfilePy
-  #   volumes:
-  #     - ./${WORKSPACE}:${USERHOME}/${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
-  #   ports:
-  #     - "8000:8000" #web server
-  #   environment:
-  #     - "PYTHONUNBUFFERED=1"
+  py-web:
+    container_name: py-web
+    build:
+      context: .
+      dockerfile: DockerfilePy
+    volumes:
+      - ./${WORKSPACE}:${USERHOME}/${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+    ports:
+      - "8000:8000" #web server
+    environment:
+      - "PYTHONUNBUFFERED=1"
 
 # 도커 up 전에 xhost + 해줄 것
 # X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것

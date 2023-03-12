@@ -33,9 +33,10 @@ RUN apt-get update && \
   ros-noetic-web-video-server \
   && rm -rf /var/lib/apt/lists/*
 
-## build (RUN 컨맨드에서 사용. .env는 사용 못하므로 ARG로..)
+## build (RUN 컨맨드에서 사용. .env는 사용 못하므로 불편하지만 같은 값으로 셋팅 해준다..)
 ARG USER=docker_noetic
 ARG HOME=/home/docker_noetic
+ARG WORKSPACE=docker_ws
 
 ## Create user "docker_noetic" ## 비번은 ARG가 잘 설정이 안되서 직접 exec로 실행하기
 RUN useradd -m $USER  && \
@@ -50,7 +51,7 @@ USER $USER
 WORKDIR $HOME
 
 RUN echo 'source /opt/ros/noetic/setup.bash' >> ${HOME}/.bashrc
-RUN echo "source ${HOME}/docker_ws/devel/setup.bash" >> ${HOME}/.bashrc
+RUN echo "source ${HOME}/${WORKSPACE}/devel/setup.bash" >> ${HOME}/.bashrc
 
 # 사용하려면 주석해제
 # COPY ./entrypoint_roslaunch.sh ./
