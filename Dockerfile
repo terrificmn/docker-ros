@@ -26,9 +26,10 @@ RUN apt-get update && \
   ros-noetic-web-video-server \
   && rm -rf /var/lib/apt/lists/*
 
-## build (RUN 컨맨드에서 사용. .env는 사용 못하므로 ARG로..)
+## buildt시 사용(RUN 컨맨드에서 사용. .env는 사용 못하므로 같은 값으로 셋팅 해준다..)
 ARG USER=docker_noetic
 ARG HOME=/home/docker_noetic
+ARG WORKSPACE=docker_ws
 
 ## user 만드는 것이랑 HOME 및 USER 지정
 ## Create user "docker_noetic"  
@@ -56,10 +57,4 @@ USER $USER
 WORKDIR $HOME
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ${HOME}/.bashrc
-RUN echo "source ${HOME}/docker_ws/devel/setup.bash" >> ${HOME}/.bashrc
-
-## dev일 경우에는 docker-comopse의 command 사용해서 roscore가 편함
-## 단, roslaunch 는 COPY ENTRYPOINT 사용할 것
-COPY ./entrypoint_roslaunch.sh ./
-# ## host컴의 파일 그대로 사용 (권한도 +x 해줄것: COPY가 권한까지도 복사)
-ENTRYPOINT ["./entrypoint_roslaunch.sh"]
+RUN echo "source ${HOME}/${WORKSPACE}/devel/setup.bash" >> ${HOME}/.bashrc

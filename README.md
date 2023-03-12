@@ -16,13 +16,25 @@ Dockerfile의 user 비빌번호는 :이후가 패스워드 임, 즉, 기본값�
 ```
 echo "$USER:pass" | chpasswd && \
 ```
-최초 .env_example을 .env 파일로 복사 사용 해야하며, 유저, 홈 등..변경 가능함      
-단, Dockerfile파일의 ARG 에도 설정 해줘야함(같은 값으로..)  
+최초 .env_example을 .env 파일로 복사 사용 해야한다. 유저, 홈 등..변경 가능함      
+
+> .env파일은 .gitignore에 추가되어 있어서 git에서 추적하지 않음  
+
+만약 유저, 홈, workspace를 변경할 경우에는 ARG를 변경해준다   
+Dockerfile에서는 .env의 변수를 사용할 수 없기 때문에 해당 변수를 사용하려면    
+**ARG로 변수를 만들고, 같은 값으로 변경**해준다 (또는 그냥 사용해도 무방)   
+예..  
+```
+ARG USER=docker_myuser
+ARG HOME=/home/docker_myuser
+ARG WORKSPACE=/catkin_ws
+```
 
 4. docker-compose.yml 파일의 volumes 옵션의 catkin_ws 경로를 원하는 곳으로 수정가능  
 실제 host 컴퓨터에서도 접근 가능하므로 catkin workspace를 만들고 src 디렉토리에   
 원하는 ros 패키지를 넣어서 공유가능. (catkin_make, catkit build는 컨테이너 안에서 빌드 실행)  
-> 현재 기본값은 docker_ws로 되어 있음
+> 현재 기본값은 docker_ws로 되어 있음  
+바꿀 경우 .env와 Dockerfile의 ARG를 각각 변경해준다 
 
 5. 실행방법  
 먼저 클론을 받은 후에 디렉토리 이동
@@ -36,10 +48,37 @@ cd ~/docker-ros
 cp .env_example .env
 ```
 
+
+### 빌드 전에 위치 등을 변경하려면   
+그냥 사용하려면 여기는 **skip** 한다!
+
 docker 컨테이너에서 사용할 유저 관련은 위를 참고  
-catkin_ws를 다른 위치에 만들려면 docker-compose.yml 파일의 volumes 옵션부분을 바꿔줘야하는데     
-이 부분은 .env 파일의 WORKSPACE=/docker_ws 를 변경하면 됨
-> 디폴트는 docker_ws
+catkin_ws를 다른 위치에 만들거나, 이름 변경은 docker-compose.yml 파일의 volumes 옵션부분을 바꿔줘야하는데   
+
+해당 내용은 이렇게 되는데, 현재 경로인 ./docker_ws 에서 컨테이너 유저인 /home/docker-noetic/docker_ws 로 연결해 주게 됨
+```
+  volumes:
+      - ./${WORKSPACE}:${USERHOME}/${WORKSPACE}
+```
+직접 docker-compose.yml를 변경할 필요는 없고, 환경 변수를 사용을 하기 때문에    
+이 부분은 .env 파일의 WORKSPACE=/docker_ws 를 변경한다.  
+현재 디폴트는 docker_ws
+
+예: .env 파일
+```
+USER=my_user
+USERHOME=/home/my_user
+WORKSPACE=catkin_ws
+```
+
+Dockerfile에서는 .env파일의 변수를 사용 못하므로 위의 사항이 변경이 있다면   
+**Dockerfile 의 ARG를 같은 값으로 변경**해준다  
+
+> 만약 host컴의 workspace 위치를 하위 디렉토리가 아닌 다른 곳을 사용하려면   
+compose.yml파일을 수정할 필요가 있어 보임    
+(WORKSPACE는 같은 값을 사용하므로)
+
+## 빌드
 
 docker 빌드
 ```
@@ -56,11 +95,43 @@ docker실행
 ```
 docker-compose up
 ```
-이제 roscore가 실행이 되게 된다.  
-다른 터미널창을 실행한 후 docker 컨테이너 실행하기
+이제 roscore가 실행이 되게 된다.  또는 roslaunch 
+> roslanch 실행이 아직 없다면 docker-compose.yml 파일에서 command 부분을 주석처리  
+(CMD roslaunch부분)
+
+
+## docker-compose.yml의 command 사용해서 roslaunch 실행
+중지하려면 ctrl+c 또는 `docker-compose stop`
+
+현재는 docker-compose.yml 파일에 roslaunch가 실행되게 되어 있으므로   
+다른 것은 수정할 필요가 없고 .env-example을 복사해서 사용하는 .env 파일을 수정해준다
+
+.env파일의 ROS_PACKAGE, ROS_LAUNCH_FILE 변수에 실행패키지를 직접 입력해준다.
+
+예
 ```
-docker exec -it ros bash
+ROS_PACKAGE=camera_pub_pkg
+ROS_LAUNCH_FILE=camera_pub_launch.launch
 ```
+빌드 없이 바로 `docker-compose up` 해주면 실행된다
+
+___   
+실행할 런치 파일이 정해져 있다면 위의 Dockerfile의 ENTRYPOINT만 사용해도 되지만   
+단점이 sh스크립트의 실행할 파일등이 바뀔 경우에는 다시 build를 해줘야한다
+
+그래서 docker-compose 파일을 사용하게 되면 빌드 없이 수정이 가능하기 때문에 좀 더 편하다
+
+대신에 ros의 자신의 워크 스페이스 setup.bash 파일이 로드가 안 되어 있기 때문에   
+실행이 바로 안 됨에 주의.
+
+그래서 command에 setup.bash 파일을 source 시켜준다음에 roslaunch나 rosrun을 해주게 된다 
+
+```
+command:
+      ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
+```
+
+> 해당 변수들은 .env파일의 정의되어 있으므로 해당 변수만 수정한다
 
 ### docker_ws 에 접근 권한 거부 시 
 ```
@@ -71,3 +142,23 @@ sudo chown $USER:root -R docker_ws
 rosbridge pkg, web pkg 추가
 
 
+## 다른 터미널에서 docker 컨테이너 실행하기. catkin 빌드하기
+```
+docker exec -it ros bash
+```
+docker exec는 터미널 디렉토리 위치 상관없이 사용이 가능하고 컨테이너가 up이 된 상태에서 사용할 수가 있다
+
+해당 컨테이너에 로그인(?)이 되면 보통 ros를 다루듯이 rosrun, roslaunch. 등이 가능하다   
+특히 컨테이너에 실행에서 **ros패키지 빌드**가 가능하다 catkin build 또는 catkin_make 를 사용
+
+docker-compose build와는 별개로 catkin 패키지를 구성할 수가 있다.   
+docker-compose build를 해서 다시 리빌드를 하면 바뀐 내용이 있다면 빌드시에 초기화가 될 수가 있는데
+
+ros관련 패키지를 catkin build등으로 빌드하면 ros패키지는 그대로 남아 있다.   
+이유는 host컴퓨터의 자원을 공유해서 사용하기 때문이다.
+
+그래서 짬뽕으로 vscode등을 이용해서 패키지 소스파일을 수정하고   
+(단, 그냥 사용하면 ros등의 헤더파일은 못 찾는다, 실제 ros는 컨테이너에 설치되어 있으므로)
+
+> vscode의 extensions 중에 Remote Development를 사용하면 실행 중인 도커 컨테이너에 붙여서 사용할 수 있어 편함   
+header파일등 (ros/ros.h 같은 파일을 읽을 수가 있다)
