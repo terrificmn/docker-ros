@@ -143,5 +143,25 @@ docker-compose up
 docker exec -it ros bash
 ```
 
+## roscore, rosluanch, rosrun 실행
+Dockerfile의 ENTRYPOINT 부분을 주석해제
+```
+## COPY, ENTRYPOINT 주석 해제 시 ros_entrypoint.sh 에 roscore/ rosrun/ roslaunch 등을 설정해줘야한다(현재 모두 주석처리됨)
+COPY ./ros_entrypoint.sh ./
+## shell script를 실행하려면 실행권한을 줘야하지만 현재 일반 유저로 되어 있어서 스킵 후 host com 쪽에서 권한 생성
+ENTRYPOINT ["./ros_entrypoint.sh"]  
+```
+
+ros_entrypoint.sh 파일에는 setup.bash 등을 source 하는 부분만 되어 있기 때문에  
+원하는 런치파일을 적어줘야 실행이 된다. 또는 roscore || rosrun 등을 실행해도 된다 
+
+> 현재는 ros_entrypoint.sh에 따로 런치파일이 입력되어 있지 않음.   
+새로 런치파일을 입력해주고 실행 하려면 후 다시 `docker compose build`를 해준다   
+
+> ENTRYPOINT를 사용하지만 ros_entrypoint.sh 에 별다른 명령이 없을 경우에는 docker는 바로 exit하게 됨
+
+> ENTRYPOINT를 사용 안하고 주석 처리할 경우에는 docker 컨테이너가 작동하므로 docker exec 명령어로 수행
+
+
 [도커 ros 관련 블로그 보기](http://54.180.113.157/tag/docker%20ros%20%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC)
 
