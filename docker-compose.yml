@@ -18,8 +18,7 @@ services:
     command:
       ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
       # - roscore
-
-    restart: always
+    # restart: always
     stdin_open: true
     privileged: true  
     tty: true
