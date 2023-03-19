@@ -38,6 +38,7 @@ services:
     volumes: 
         - ./nginx_conf/default.conf:/etc/nginx/conf.d/default.conf  ## 서버배포시에는 prod ##로컬 개발시는 dev (env)
         - ./web_src:/var/www/html  # app 디렉토리도 생성한다해서 도커 nginx 서버와 매칭
+    restart: always
     depends_on:
       - php
   
@@ -49,6 +50,7 @@ services:
     build:  # 위의 image는 제거
       context: .  # 현재 디렉토리
       dockerfile: php.Dockerfile  
+    restart: always
     ports: 
       - "9000:9000"
 
