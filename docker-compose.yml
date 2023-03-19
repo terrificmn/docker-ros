@@ -15,8 +15,8 @@ services:
       - "11311:11311" #ros
       - "9090:9090" #rosbridge
       - "11315:11315" #web_video
-    # command: 
-      # ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
+    command: 
+      ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
       # - roscore  ## dev 경우 사용
     restart: always
     stdin_open: true
@@ -40,11 +40,9 @@ services:
         - ./web_src:/var/www/html  # app 디렉토리도 생성한다해서 도커 nginx 서버와 매칭
     depends_on:
       - php
-    # networks:
-    #   - laravel
   
   php:
-    # image: php:fpm #이렇게만 적으면 가장 최신버전을 받는다. 명시할 수도 있음 php:8.0-fpm , php:7.4-fpm 
+    # image: php:fpm #이렇게만 적으면 가장 최신버전을 받는다. Dockerfile 에서 받는다 
     container_name: php
     volumes:
       - ./web_src:/var/www/html  #이제 php를 app 디렉토리로 연결
@@ -53,7 +51,5 @@ services:
       dockerfile: php.Dockerfile  
     ports: 
       - "9000:9000"
-    # networks:
-    #   - laravel
 
 ## xhost +가 필요할 수도 있음
