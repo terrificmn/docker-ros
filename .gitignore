@@ -1,2 +1,4 @@
 docker_ws
 .env
+.vscode
+web_src
