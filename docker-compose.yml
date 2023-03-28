@@ -16,8 +16,8 @@ services:
       - "9090:9090" #rosbridge
       - "11315:11315" #web_video
     command: 
-      ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
-      # - roscore  ## dev 경우 사용
+      # ["bash", "-c", "source ${USERHOME}/${WORKSPACE}/devel/setup.bash && roslaunch ${ROS_PACKAGE} ${ROS_LAUNCH_FILE}"]
+      - roscore  ## dev 경우 사용
     restart: always
     stdin_open: true
     privileged: true
@@ -51,5 +51,21 @@ services:
       dockerfile: php.Dockerfile  
     ports: 
       - "9000:9000"
+
+  npm:
+    image: node:16.13 #stable  
+    container_name: npm
+    volumes: 
+      - ./web_src:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: ['npm']
+    #command: ['run', 'watch']  ## development 할 때에는 실행을 해서 tailwindcss의 css를 계속 만들 수 있게 함
+    ### delopyment 시에 command는 주석처리하기 // development 때에는 주석해제
+    #entrypoint: ['npm', '--no-build-links']  # docker-composer run 이 실행될 때 실행된다고 함
+    # $ docker-compose run -rm npm install
+    # npm으로 로컬에서 하듯이 json파일을 이용 패키지들을 다운 되어 진다
+    # 이후 
+    # $ docker-compose run --rm npm run dev 
+    # 으로 실행을 하면 mix를 진행하게 됨 
 
 ## xhost +가 필요할 수도 있음
