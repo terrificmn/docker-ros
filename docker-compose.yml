@@ -7,8 +7,8 @@ services:
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
     volumes:
-      - ./docker_ws:${HOME}/docker_ws   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
-      - ~/.ssh:/root/.ssh  # 홈디렉토리에 있는 .ssh 연결
+      - ./docker_ws:${HOME}/${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+      - ~/.ssh:/${HOME}/.ssh  # 홈디렉토리에 있는 .ssh 연결
       - /tmp/.X11-unix:/tmp/.X11-unix   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /dev:/dev  #usb등의 장치 연결
     ports:
@@ -24,7 +24,4 @@ services:
       - video
     environment:
       - ROS_MASTER_URI=http://localhost:11311
-      - DISPLAY=$DISPLAY
-      # - QT_X11_NO_MITSHM=1 # 이제 보니 Nvidia 전용인 듯하다
-
-## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
+      # - DISPLAY=0

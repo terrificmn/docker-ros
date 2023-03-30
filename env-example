@@ -1,0 +1,4 @@
+## .env 파일로 copy
+## 변경 시 Dockerfile 의 ARG도 같은 값으로 설정!
+HOME=/home/docker_noetic
+WORKSPACE=catkin_ws

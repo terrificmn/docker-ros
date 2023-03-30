@@ -1,51 +1,39 @@
 # docker로 ros 실행하기
-1. melodic 버전 ros 입니다
+1. ROS noetic 버전 - Windows10 wsl2 
 
-2. Dockerfile 내의 Mesa libraries 설치는 환경에 따라 삭제 가능 (현재 AMD용으로 작성되었습니다)
+2. env-example 파일을 .env 파일로 복사 후 사용
 
-3. 현재는 도커 컨테이너를 root 권한으로 사용하기 때문에 /root/.bashrc 생성 후 사용함 (일반 유저로 하는 것은 추후 업데이트할 예정)
+3. docker-compose.yml 파일의 volumes 옵션의 catkin_ws 경로를 원하는 곳으로 수정가능   
+.env 파일의 변경, Dockerfile 의 ARG도 같은 값으로 변경 (Dockerfile에서 .env파일의 변수 호환 안됨)
 
-4. docker-compose.yml 파일의 volumes 옵션의 catkin_ws 경로를 원하는 곳으로 수정가능
-
-5. docker, docker-compose 가 설치되어 있어야 합니다.  
+4. docker, docker-compose 가 설치되어 있어야 합니다.  
 [도커엔진 공식 사이트 - CentOS 기준](https://docs.docker.com/engine/install/centos/)  
 - 리눅스 배포판에 따라서 왼쪽 메뉴에서 선택하면 됩니다.  
 - docker-compose 도 해당 사이트 왼쪽 메뉴에서 찾을 수 있습니다
 
-6. 실행방법  
-먼저 클론을 받은 후에 catkin_ws를 생성하는데 원하는 위치에 만들어 주면 됩니다.  
+5. 실행방법  
+먼저 클론을 받은 후에 워크스페이스(catkin_ws)를 생성   
 현재 디렉토리 안에다가 만든다고 하면 아래 처럼 사용 가능
 ```
 cd ~/docker-ros
 mkdir catkin_ws
 ```
 
-만약 다른 경로에 만들었다면 docker-compose.yml 파일의 volumes 옵션부분을 바꿔줘야함  
-예:
-```xml
-volumes:
-      - /home/ubun22/catkin_ws:/root/catkin_ws 
-```
-
 docker 빌드
 ```
-docker-compose build
+docker compose build
 ```
 
 디스플레이 공유하기
-```
-xhost + local:docker
-```
+**XLaunch** 프로그램 사용해야함  
 
 docker실행
 ```
-docker-compose up
+docker compose up
 ```
 
 다른 터미널에 docker 컨테이너 실행하기
 ```
 docker exec -it ros bash
 ```
-
-[도커 ros 관련 블로그 보기](http://54.180.113.157/tag/docker%20ros%20%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC)
 
