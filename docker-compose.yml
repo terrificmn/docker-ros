@@ -13,8 +13,9 @@ services:
       - /dev:/dev  #usb등의 장치 연결
     ports:
       - "11311:11311"
-    command:
-      - roscore  
+    # command:
+    #   - roscore  
+    hostname: win_docker
     stdin_open: true
     privileged: true
     tty: true
@@ -23,5 +24,8 @@ services:
     group_add:
       - video
     environment:
-      - ROS_MASTER_URI=http://localhost:11311
+      - ROS_MASTER_URI=http://${MASTER_IP}:11311
       # - DISPLAY=0
+    
+    ## test용
+    # rostopic pub /chat std_msgs/String "data: 'hello'"

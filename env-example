@@ -2,3 +2,5 @@
 ## 변경 시 Dockerfile 의 ARG도 같은 값으로 설정!
 HOME=/home/docker_noetic
 WORKSPACE=catkin_ws
+MASTER_IP=192.168.111.111 
+### multi로 연결 시 MASTER_IP 설정, 아닐 시에는 localhost
