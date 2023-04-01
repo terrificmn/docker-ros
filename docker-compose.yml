@@ -29,6 +29,8 @@ services:
     environment:
       - ROS_MASTER_URI=http://localhost:11311
       - DISPLAY=$DISPLAY
+    networks:
+      - ros-web
 
   web:
     image: nginx:latest
@@ -40,6 +42,8 @@ services:
         - ./web_src:/var/www/html  # app 디렉토리도 생성한다해서 도커 nginx 서버와 매칭
     depends_on:
       - php
+    networks:
+      - ros-web
   
   php:
     # image: php:fpm #이렇게만 적으면 가장 최신버전을 받는다. Dockerfile 에서 받는다 
@@ -51,21 +55,40 @@ services:
       dockerfile: php.Dockerfile  
     ports: 
       - "9000:9000"
+    networks:
+      - ros-web
 
   npm:
     image: node:16.13 #stable  
     container_name: npm
     volumes: 
       - ./web_src:/var/www/html
-    working_dir: /var/www/html
-    entrypoint: ['npm']
-    #command: ['run', 'watch']  ## development 할 때에는 실행을 해서 tailwindcss의 css를 계속 만들 수 있게 함
-    ### delopyment 시에 command는 주석처리하기 // development 때에는 주석해제
-    #entrypoint: ['npm', '--no-build-links']  # docker-composer run 이 실행될 때 실행된다고 함
+    working_dir: /var/www/html/web_motor ## project
+    networks:
+      - ros-web
+    entrypoint: ['npm']  ## npm 컨테이너에서 다른 명령어를 쳐야할 경우 주석을 해제하고 docker compose up을 다시한다 (예 npm 명령어로 시작하는 경우가 아닌 경우: npx)
     # $ docker-compose run -rm npm install
     # npm으로 로컬에서 하듯이 json파일을 이용 패키지들을 다운 되어 진다
     # 이후 
     # $ docker-compose run --rm npm run dev 
     # 으로 실행을 하면 mix를 진행하게 됨 
+  
+  # vue-cli
+  vue:
+    build:  # image는 위의 npm 노드와 같다
+      context: .  # 현재 디렉토리
+      dockerfile: vue.Dockerfile  
+    container_name: vue  ## vue-cli
+    volumes:
+      - ./web_src:/var/www/html
+    working_dir: /var/www/html/web_motor
+    entrypoint: ['vue']
+    ports:
+      - "8080:8080"
+    networks:
+      - ros-web
+
+networks:
+  ros-web:
 
 ## xhost +가 필요할 수도 있음
