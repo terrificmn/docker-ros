@@ -7,6 +7,4 @@ source "/home/docker_noetic/docker_ws/devel/setup.bash"
 ### ros_entrypoint.sh 런치파일 변경 시에는 docker compose build를 다시 해야함
 ### roslaunch 실행이 없다면 도커 up하면 바로 exit하게 됨 
 ##########################
-
-# export TURTLEBOT3_MODEL=waffle  ## turtlebot3 example
-# roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch ## example
+roscore

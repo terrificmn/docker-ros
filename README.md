@@ -212,6 +212,14 @@ ros_entrypoint.sh 파일에는 setup.bash 등을 source 하는 부분만 되어 
 docker-compose.yml 에서 command로  roscore가 단독으로 지정이 안됨   
 (공식 osrf/ros 이미지에서는 가능)   
 
-docker exec 를 통해서 roscore을 실행하거나, ros_entrypoint.sh 파일에 roscore를 주석해제 후 Dockerfile에서  COPY, ENTRYPOINT등을 주석해제 하고 사용 - 각각 주석 설명 참고
+> bash 명령어로 실행을 해도 `command not found` /opt/ros 에 있는 setup.bash가 인식이 안되서 그런 듯 하다
+
+docker exec 를 컨테이너에 직접 roscore을 실행하거나,   
+
+*현재 상태*   
+ros_entrypoint.sh 파일에 roscore 지정   
+Dockerfile에서  COPY, ENTRYPOINT등을 주석해제됨 - 사용하게 되어 있음   
+
+> roscore를 사용 안하려면 위의 내용들 주석처리 한다 
 
 
