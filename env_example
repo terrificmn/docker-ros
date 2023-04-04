@@ -1,0 +1,8 @@
+##docker_compose.yml 에서만 사용 . .env 파일로 카피한 후 사용할 것
+USER=docker_noetic
+USERHOME=/home/docker_noetic
+WORKSPACE=docker_ws
+ROS_PACKAGE=ros_package
+ROS_LAUNCH_FILE=ros_launchfile.launch
+MASTER_IP=192.168.111.111 
+HOST_IP=192.168.1.112
