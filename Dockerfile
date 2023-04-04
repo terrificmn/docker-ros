@@ -16,8 +16,8 @@ RUN apt-get install --no-install-recommends -y \
     python3-wstool 
 
 # rsodep 최초실행  init 및 update만 하면 sudo 로 하라는 에러발생
-RUN rosdep init \
-  && rosdep update --rosdistro $ROS_DISTRO
+# RUN rosdep init \
+#   && rosdep update --rosdistro $ROS_DISTRO
 
 RUN apt-get update && \
     apt-get install -y software-properties-common \ 
@@ -32,7 +32,7 @@ ARG WORKSPACE=catkin_ws
 
 ## Create user "docker_noetic"
 RUN useradd -m $USER && \
-    echo $USER:password | chpasswd && \
+    echo $USER:winpass | chpasswd && \
     adduser $USER sudo && \
     cp /root/.bashrc $HOME
 

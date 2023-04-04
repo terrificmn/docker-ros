@@ -15,7 +15,8 @@ services:
       - "11311:11311"
     # command:
     #   - roscore  
-    hostname: win_docker
+    hostname: win-docker-ros
+    # network_mode: host  ## master가 따로 있을 경우만 사용
     stdin_open: true
     privileged: true
     tty: true
@@ -23,9 +24,6 @@ services:
       - /dev:/dev
     group_add:
       - video
-    environment:
-      - ROS_MASTER_URI=http://${MASTER_IP}:11311
-      # - DISPLAY=0
-    
-    ## test용
-    # rostopic pub /chat std_msgs/String "data: 'hello'"
+    # environment:
+      # - ROS_MASTER_URI=http://${MASTER_IP}:11311
+      # - ROS_IP=${HOST_COM_IP}
