@@ -7,12 +7,14 @@ services:
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
     volumes:
-      - ./docker_ws:${HOME}/docker_ws   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+      - ./${WORKSPACE}:${USERHOME}/${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
       - ~/.ssh:/root/.ssh  # 홈디렉토리에 있는 .ssh 연결
       - /tmp/.X11-unix:/tmp/.X11-unix   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /dev:/dev  #usb등의 장치 연결
     ports:
       - "11311:11311"
+      - "9090:9090" #rosbridge
+      - "11315:11315" #web_video
     command:
       - roscore  
     stdin_open: true
@@ -27,4 +29,15 @@ services:
       - DISPLAY=$DISPLAY
       # - QT_X11_NO_MITSHM=1 # 이제 보니 Nvidia 전용인 듯하다
 
+  py-web:
+    container_name: py-web
+    build:
+      context: .
+      dockerfile: Dockerfile-Py
+    volumes:
+      - ./${WORKSPACE}:${USERHOME}/${WORKSPACE} 
+    ports:
+      - "8000:8000"
+    environment:
+      - "PYTHONUNBUFFERED=1"
 ## 성공! X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것
