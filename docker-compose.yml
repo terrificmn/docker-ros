@@ -2,7 +2,7 @@ version: "3.9"
 services: 
 
   ros:
-    container_name: ros
+    container_name: ros2
     build: 
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
@@ -12,8 +12,8 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
       - /dev:/dev  #usb등의 장치 연결
-    ports:
-      - "11311:11311"
+    # ports:
+    #   - "11311:11311"
     # command:
     ## docker exec를 사용해서 접근하거나 || Dockerfile의 ENTRYPOINT 사용하기 || bash명령어로 setup.bash 읽고 roslaunch실행
     # restart: always  ## when need to restart after reboot (of course it starts always)
@@ -27,7 +27,6 @@ services:
     group_add:
       - video
     environment:
-      - ROS_MASTER_URI=http://localhost:11311
       - DISPLAY=$DISPLAY
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all

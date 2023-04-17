@@ -1,0 +1,10 @@
+i=1
+## 경로 중요.. 현재 docker에서 home인 상태
+while read line || [ -n "$line" ] ; do
+    if [ $i = 2 ] 
+    then
+        break;
+    fi
+    passwd=$line
+    ((i+=1))
+done < ./scripts/include/.sr  ## read file
