@@ -5,6 +5,6 @@ while read line || [ -n "$line" ] ; do
     then
         break;
     fi
-    passwd=$line
+    password=$line
     ((i+=1))
 done < ./scripts/include/.sr  ## read file

@@ -1,12 +1,6 @@
 # docker로 ros 실행하기
-docker로 ros 실행하기
-
-## main branch
-현재 nvidia/cudag1의 ubuntu18.04를 사용하는 이미지를 사용 합니다.   
-nvidia의 그래픽 카드를 사용할 경우에는 docker에서 rviz, gazebo등을 실행했을 시에  
-잘 띄워줍니다. 
-
-ROS는 melodic 버전. 
+docker로 ros 실행하기  
+ROS2 humble 버전
 
 ## requirements 
 docker, docker-compose, git 등이 필요 합니다.    
@@ -18,41 +12,20 @@ docker, docker-compose, git 등이 필요 합니다.
 
 요새는 docker-compose도 plugin으로 처음부터 바로 설치가 가능한 듯 하다. (Nov 16 2022)
 
-## ros melodic 또는 noetic 버전 가능 (branch 별)
-1. melodic 버전 ros 입니다
+## HUMBLE ROS2
+1. ROS2 - humble   
+desktop 버전  osrf ros 정식 이미지 사용   
 
-melodic에서 nvidia그래픽카드를 사용할 경우 호스트 컴퓨터의 자원을 제대로 사용하지 못하는 경우가 생겨서  
-(nvidia 그래픽 드라이버를 사용 못하는 듯 함)   
+ros1과는 다르게 일단 ros 이미지를 사용해도 gui 프로그램 실행에 큰 문제는 발생하지 않는 듯 함   
 
-nvidia/cudagl:11.3.1-devel-ubuntu18.04 이미지를 이용해서 build   
-(ros이미지에서 변경함)  
-rviz, gazebo 등 실행 잘 됨
+현재 rviz2는 사용이 잘 됨  - nvidia/cudagl 이미지를 사용하지 않음  
 
-2. ROS - noetic 버전 추가 되었습니다. noetic 버전을 받으려면 -b 옵션으로 클론하세요 
-```
-git clone -b noetic https://github.com/terrificmn/docker-ros.git
-```
-업데이트가 필요하지만 아직 초기 버전입니다. 해당 브랜치의 READMD.md 파일을 참고
-nvidia가 아닌, amd 라데온 그래픽 호환(?) 버전 입니다.  
-amd 라데온을 사용할 시에 그래픽 화면 잘 띄워줍니다.   
-- noetic 버전에는 새로 root가 아닌 user를 추가했습니다. 자세한 사항은 아래를 참고
+> ROS1 Noetic 버전에서는 Nvidia 그래픽카드를 사용할 경우 xhost +x 해도 사용이 안되었는데  
+ros-humble-desktop 버전에서는 xhost와 nvidia cudagl 이미지를 사용 안했는데도   
+rviz2 등이 잘 사용이 됨; docker-compose에서  runtime: nvidia 를 사용해서 그럴 듯도 함   
+runtime 파라미터를 생략하면 gazebo 등은 실행이 (검정화면) 안됨
 
-
-3. ROS - melodic 버전 | amd 라데온 버전 추가 되었습니다. 
-```
-git clone -b melodic-radeon https://github.com/terrificmn/docker-ros.git
-```
-amd 그래픽 사용할 경우 사용~   상위 버전 그래픽카드는 호환여부는 모르겠음  
-rviz, gazebo등 잘 실행 됨   
-
-4. 싱글보드컴퓨터 tinker board2 ROS noetic 버전 추가 되었습니다.
-깃 클론
-```
-git clone -b tinker-noetic https://github.com/terrificmn/docker-ros.git
-```
-
-팅커보드2 에서 ROS noetic 버전 사용 가능!  그래픽 화면 호환 잘 됨
-
+어쨋든 **nvidia-docker2** 가 필요하다. (apt 로 설치)
 
 
 ## 깃 클론, docker-compose build
@@ -60,10 +33,12 @@ git clone -b tinker-noetic https://github.com/terrificmn/docker-ros.git
 ## 사용방법
 1. 깃 클론을 해줍니다.
 ```
-git clone https://github.com/terrificmn/docker-ros.git
+git clone -b humble https://github.com/terrificmn/docker-ros.git
 ```
 
-> 여기에서 특정 브랜치 버전이 필요하면 -b 옵션을 넣고 브랜치명을 적어준다
+
+> 현재 ROS 버전 별로 블랜치가 많이 생성되어 있으므로   
+특정 브랜치 버전이 필요하면 -b 옵션을 넣고 브랜치명을 적어준다
 
 이 후 해당 디렉토리로 이동 후   
 ```
@@ -85,8 +60,8 @@ cp .env_example .env
 새롭게 작동할 방법을 찾아 업데이트를 해야할 듯 하다
 (브랜치마다, 조금씩 다를 수 있음-적용이 안되어 있는 것도 있음)
 
-3. 실행방법 (Melodic)  
-현재 docker_ws 가 (catkin_ws로 기본 디렉토리명으로 되어 있음)   
+3. 실행방법 
+현재 dr_ros2_ws 가 (기본 디렉토리명으로 되어 있음)   
 
 그래서 만약 유저명, ws디렉토리명을 바꿨다면 (.env파일에서)
 
@@ -109,19 +84,6 @@ volumes:
       - /home/ubun22/catkin_ws:/root/catkin_ws 
 ```
 
-4. noetic 실행방법
-실행방법 (Noetic)   
-브랜치는 -b noetic   
-현재는 docker_ws로 디렉토리가 연결되어 있습니다.   
-디렉토리로 이동 (깃허브 클론 받은 곳으로 이동)
-```
-cd ~/docker-ros
-mkdir docker_ws
-```
-이제 docker_ws 디렉토리에서는 ros의 catkin_ws 처럼 사용을 하면 됩니다.  
-docker 컨테이너로 (복사) 내용이 그대로 사용됨  
-
-
 ## 빌드 및 디스플레이 공유 docker up
 docker 빌드
 ```
@@ -132,6 +94,7 @@ docker-compose build
 ```
 xhost + local:docker
 ```
+> nvidia-docker2 가 필요하고, xhost 명령은 안해도 상관은 없는 듯 하다.   
 
 docker실행
 ```
@@ -143,25 +106,11 @@ docker-compose up
 docker exec -it ros bash
 ```
 
-## roscore, rosluanch, rosrun 실행
-Dockerfile의 ENTRYPOINT 부분을 주석해제
+##  Permission denied
+워크스페이스 관련해서 디렉토리 Permission denied 발생하면  
 ```
-## COPY, ENTRYPOINT 주석 해제 시 ros_entrypoint.sh 에 roscore/ rosrun/ roslaunch 등을 설정해줘야한다(현재 모두 주석처리됨)
-COPY ./ros_entrypoint.sh ./
-## shell script를 실행하려면 실행권한을 줘야하지만 현재 일반 유저로 되어 있어서 스킵 후 host com 쪽에서 권한 생성
-ENTRYPOINT ["./ros_entrypoint.sh"]  
+sudo chown $USER:$USER dr_ros2_ws/
 ```
+으로 root 소유에서 user소유로 바꿔준다 
 
-ros_entrypoint.sh 파일에는 setup.bash 등을 source 하는 부분만 되어 있기 때문에  
-원하는 런치파일을 적어줘야 실행이 된다. 또는 roscore || rosrun 등을 실행해도 된다 
-
-> 현재는 ros_entrypoint.sh에 따로 런치파일이 입력되어 있지 않음.   
-새로 런치파일을 입력해주고 실행 하려면 후 다시 `docker compose build`를 해준다   
-
-> ENTRYPOINT를 사용하지만 ros_entrypoint.sh 에 별다른 명령이 없을 경우에는 docker는 바로 exit하게 됨
-
-> ENTRYPOINT를 사용 안하고 주석 처리할 경우에는 docker 컨테이너가 작동하므로 docker exec 명령어로 수행
-
-
-[도커 ros 관련 블로그 보기](http://54.180.113.157/tag/docker%20ros%20%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC)
 

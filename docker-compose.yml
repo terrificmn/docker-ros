@@ -17,6 +17,7 @@ services:
     # command:
     ## docker exec를 사용해서 접근하거나 || Dockerfile의 ENTRYPOINT 사용하기 || bash명령어로 setup.bash 읽고 roslaunch실행
     # restart: always  ## when need to restart after reboot (of course it starts always)
+    hostname: ros2-humble
     stdin_open: true
     privileged: true
     tty: true
