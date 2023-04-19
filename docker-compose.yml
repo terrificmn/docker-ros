@@ -12,6 +12,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
       - /dev:/dev  #usb등의 장치 연결
+      # - /opt/ros/noetic:/opt/ros/noetic:ro  # host com의 noetic 연결 테스트
     # ports:
     #   - "11311:11311"
     # command:
