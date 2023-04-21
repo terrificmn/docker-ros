@@ -125,11 +125,20 @@ cd ~/docker-ros
 이후 자동으로 docker컨테이너 실행이 되는데   
 이제 ros2 컨테이너로 들어왔다면 (프롬프트를 확인하자)
 
-컨테이너에서 ros2에서
+컨테이너에서 ros2에서 복사한 스크립트를 사용한다  
+- 스크립트에서는 최종적으로 colcon 빌드까지 진행하게 된다   
 ```
 cd dr_ros2_ws; ./ff_install_start.sh
 ```
 > 이후 비번 한번 입력해야함 (sudo)
+
+
+```
+ WARNING:colcon.colcon_cmake.task.cmake.build:Could not run installation step for package 'ff_rviz_plugins_ros1' because it has no 'install' target
+ ```
+ROS1 관련해서는 무시한다. 
+
+[공식 깃허브 README 보기 -ROS1도 설치가능](https://github.com/open-rmf/free_fleet)
 
 
 현재 docker 빌드 시에 .bashrc에 gazebo 셋업 배쉬 파일 입력되게 되어 있으나   
@@ -138,6 +147,31 @@ cd dr_ros2_ws; ./ff_install_start.sh
 *필요시* gazebo의 setup.bash를 source 시켜준다   
 ```
 source /usr/share/gazebo/setup.bash
+```
+
+
+### 터틀봇3 시뮬레이션 설치
+도커 컨테이너에서 설치해 준다. 먼저 의존성 프로그램 설치
+```
+sudo apt install ros-humble-nav2-util ros-humble-nav2-bringup ros-humble-rviz2
+```
+
+터틀봇 험블 브랜치 설치
+```
+cd ~/docker-ros/dr_ros2_ws/src
+git clone https://github.com/ROBOTIS-GIT/turtlebot3 -b humble-devel
+```
+
+rosdep update 해주기
+```
+cd ~/docker-ros/dr_ros2_ws/
+rosdep install --from-paths src --ignore-src --rosdistro humble -yr
+```
+
+빌드 
+```
+source /opt/ros/humble/setup.bash
+colcon build --packages-select turtleboe3
 ```
 
 ## free fleet 실행
@@ -151,5 +185,3 @@ ros2 launch ff_examples_ros2 turtlebot3_world_ff_server.launch.xml
 source ~/ff_ros2_ws/install/setup.bash
 export TURTLEBOT3_MODEL=burger; ros2 launch ff_examples_ros2 turtlebot3_world_ff.launch.xml
 ```
-
-
