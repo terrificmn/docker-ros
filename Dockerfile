@@ -8,10 +8,12 @@ ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO humble
 
 # repository 등록/ ros-humble-desktop 설치 필요 없음 (이미지 자체로 사용)
+## python3 setuptools 버전 낮추기
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl software-properties-common \
     ros-dev-tools \ 
-    git vim sudo \
+    git vim sudo python3-pip && \
+    python3 -m pip install setuptools==58.2.0 \ 
     && rm -rf /var/lib/apt/lists/*
 
 # build시 사용 // RUN에서
@@ -37,6 +39,7 @@ WORKDIR ${HOME}
 
 ## 셋업 bash 부분이 
 RUN echo "source /opt/ros/humble/setup.bash" >> ${HOME}/.bashrc
+RUN echo "source /usr/share/gazebo/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/${WORKSPACE}/install/setup.bash" >> ${HOME}/.bashrc
 
 ## ros2는 roscore 없으므로 따로 실행 없음 - 추후 런치파일 등록

@@ -114,3 +114,42 @@ sudo chown $USER:$USER dr_ros2_ws/
 으로 root 소유에서 user소유로 바꿔준다 
 
 
+## free fleet 관련
+free fleet을 사용해 보려면   
+최초 `docker compose up` 이후에 터미널에 
+```
+cd ~/docker-ros
+./first_script_copy.sh
+```
+를 실행해준다. 그럼 script를 도커 컨테이너 ros2에 접근할 수 있게 복사한다   
+이후 자동으로 docker컨테이너 실행이 되는데   
+이제 ros2 컨테이너로 들어왔다면 (프롬프트를 확인하자)
+
+컨테이너에서 ros2에서
+```
+cd dr_ros2_ws; ./ff_install_start.sh
+```
+> 이후 비번 한번 입력해야함 (sudo)
+
+
+현재 docker 빌드 시에 .bashrc에 gazebo 셋업 배쉬 파일 입력되게 되어 있으나   
+처음에 처음 도커 깡통(?) 일 경우에는 desktop 버전임에도 gazebo는 설치가 안되어 있는 것 같다
+
+*필요시* gazebo의 setup.bash를 source 시켜준다   
+```
+source /usr/share/gazebo/setup.bash
+```
+
+## free fleet 실행
+example 실행 - Turtlebo3 Fleet Server   
+```
+ros2 launch ff_examples_ros2 turtlebot3_world_ff_server.launch.xml
+```
+
+또는 
+```
+source ~/ff_ros2_ws/install/setup.bash
+export TURTLEBOT3_MODEL=burger; ros2 launch ff_examples_ros2 turtlebot3_world_ff.launch.xml
+```
+
+
