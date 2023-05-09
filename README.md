@@ -148,6 +148,8 @@ rosbridge pkg, web pkg 추가
 기존 npm 컨테이너에서는 vue 명령을 할 수가 없으므로   
 vue-cli 컨테이너 추가~ (npm과 같은 버전의 이미지 사용)
  
+to do : vue 부분 마무리해서 tinker-noetic 브랜치에 merge해야함   
+cdn 복구 되는대로 진행해야함^C
 
 
 ## 다른 터미널에서 docker 컨테이너 실행하기. catkin 빌드하기

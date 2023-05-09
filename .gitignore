@@ -2,3 +2,4 @@ docker_ws
 .env
 .vscode
 web_src
+ros_test_ws
