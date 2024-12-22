@@ -1,4 +1,4 @@
-# docker로 ros 실행하기
+# docker로 ros2 실행하기
 docker로 ros 실행하기  
 ROS2 humble 버전
 
@@ -12,20 +12,54 @@ docker, docker-compose, git 등이 필요 합니다.
 
 요새는 docker-compose도 plugin으로 처음부터 바로 설치가 가능한 듯 하다. (Nov 16 2022)
 
+## branch 
+브랜치 종류
+
+humble  
+      - humble ros2, *nvidia-docker2 사용안함*   
+
+humble-nvidia  
+      - humble ros2(desktop 컨테이너), *nvidia 이미지 사용 안함*, nvidia-docker2    
+
+noetic-win10  
+      - windows10 wsl2, windows에서 활용, README 참고  
+
+noetic-radeon  
+      - ros noetic, python3 http.server, amd관련 라이브러리 & env  
+
+noetic-nvidia  
+      - nvidia/cudagl:11.3.1-devel-ubuntu20.04 이미지 사용, noetic, nvidia관련 env  
+
+> 최신 humble 브랜치 이하에서는 script, container 등이 다르므로 필요한 경우  
+다른 브랜치 내용 참고하자  
+
+
 ## HUMBLE ROS2
-1. ROS2 - humble   
+1. humble 브랜치   
+ros2 humble   
+
+docker-compose.yml 파일에서 `runtime: nvidia` 를 사용하지 않는다.
+
 desktop 버전  osrf ros 정식 이미지 사용   
 
 ros1과는 다르게 일단 ros 이미지를 사용해도 gui 프로그램 실행에 큰 문제는 발생하지 않는 듯 함   
+rviz2 등도 잘 사용이 잘 됨  
 
-현재 rviz2는 사용이 잘 됨  - nvidia/cudagl 이미지를 사용하지 않음  
+### (참고)humble-nvidia 브랜치 
+ros2 컨테이너만으로는 nvidia 특정 그래픽카드? 에서는 xhost 등을 이용해도 안되는 경우가 있었는데  
+이 경우에는 gpu 기능을 활성해주는 nvidia tool kit을 이용하는 방법이 있다.  
+어쨋든 **nvidia-docker2** 가 필요하다. (apt 로 설치)  
 
-> ROS1 Noetic 버전에서는 Nvidia 그래픽카드를 사용할 경우 xhost +x 해도 사용이 안되었는데  
-ros-humble-desktop 버전에서는 xhost와 nvidia cudagl 이미지를 사용 안했는데도   
-rviz2 등이 잘 사용이 됨; docker-compose에서  runtime: nvidia 를 사용해서 그럴 듯도 함   
-runtime 파라미터를 생략하면 gazebo 등은 실행이 (검정화면) 안됨
+docker-compose.yml 파일에서 runtime: nvidia 로 설정해서 사용
+```
+runtime: nvidia  
+```
 
-어쨋든 **nvidia-docker2** 가 필요하다. (apt 로 설치)
+docker-compose에서  runtime: nvidia 를 설정해서 사용   
+> 기존 방식대로 ros2 컨테이너만 사용할 시 rviz/ gazebo 등 그래픽 자원을 사용해야하는 경우  
+실행이 안 되는 경우가 발생, runtime 파라미터를 생략하면 gazebo 등은 실행이 (검정화면) 안됨  
+
+*xhost + 등, humble-nvidia 브랜치에서도 rviz2 등이 안 되는 경우에는 nvidia/cudagl 이미지를 사용하는 방법도 있음*
 
 
 ## 깃 클론, docker-compose build
@@ -51,19 +85,29 @@ cd docker-ros
 ```
 cp .env_example .env
 ```
-복사 한 .env 파일에서 변경해줍니다. 그대로 사용해도 무방  
-유저명이나, 유저 홈 디렉토리, catkin_ws 이름을 변경할 수 있음  
+복사 한 .env 파일에서 변경해줍니다. *아닌 경우에는 스킵 후 바로 build 단계를 참고 한다.*  
 
+그대로 사용해도 무방하나 변경 시 아래 방법을 따라 한다.  
+
+### env 설정 변경 
+1. 유저명이나, 유저 홈 디렉토리, docker_ws (catkin_ws/colcon_ws) 이름을 변경할 수 있음  
 > 단, Dockerfile에는 ARG 를 이용해서 똑같이 설정해줘야하는 함정이 있음;;;;   
 안타깝게도 .env파일의 환경변수가 Dockerfile에서는 적용이 안되므로   
 그리고 ARG도 build할 때 RUN 키워드 명령어에서만 작동하므로 ENV랑은 또 호환이 안되므로    
 새롭게 작동할 방법을 찾아 업데이트를 해야할 듯 하다
 (브랜치마다, 조금씩 다를 수 있음-적용이 안되어 있는 것도 있음)
 
-3. 실행방법 
-현재 dr_ros2_ws 가 (기본 디렉토리명으로 되어 있음)   
+2. 만약 같은 컨테이너를 또 생성해야하는 경우, 같은 컨테이너 이름이 ros2 가 또 있는 경우에는   
+docker compose build 에서 에러 발생하므로  
+COMPOSE_PROJECT_NAME 를 변경 한다.  
+```
+COMPOSE_PROJECT_NAME=ros2-myproject
+```
+> 이렇게 했을 시에도 안 될 경우에는 docker-compose.yml 의 컨테이너 이름을 변경해준다. 
 
-그래서 만약 유저명, ws디렉토리명을 바꿨다면 (.env파일에서)
+3. 변경 방법 
+현재 docker_ros2_ws 가 (기본 디렉토리명으로 되어 있음)   
+.env파일에서 만약 유저명, ws디렉토리명을 바꿨다면  
 
 Dockerfile 의 아래부분을 같은 내용으로 변경해주세요   
 ``` 
@@ -83,6 +127,7 @@ WORKDIR /home/newuser
 volumes:
       - /home/ubun22/catkin_ws:/root/catkin_ws 
 ```
+> 현재는 이 부분도 환경 변수로 대체해서 샤용
 
 ## 빌드 및 디스플레이 공유 docker up
 docker 빌드
@@ -103,7 +148,7 @@ docker-compose up
 
 다른 터미널에 docker 컨테이너 실행하기
 ```
-docker exec -it ros bash
+docker exec -it ros2 bash
 ```
 
 ##  Permission denied
