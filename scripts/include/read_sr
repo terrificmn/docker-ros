@@ -7,4 +7,4 @@ while read line || [ -n "$line" ] ; do
     fi
     password=$line
     ((i+=1))
-done < ./scripts/include/.sr  ## read file
+done < ./scripts/include/.docker-sr  ## read file

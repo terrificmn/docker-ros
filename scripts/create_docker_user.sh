@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./scripts/include/open_sr
+source ./scripts/include/read_sr
 
 echo $password
 

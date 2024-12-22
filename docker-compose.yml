@@ -1,29 +1,30 @@
-version: "3.9"
 services: 
 
-  ros:
+  ros2:
     container_name: ros2
     build: 
       context: .  # 현재 디렉토리
       dockerfile: Dockerfile  
     volumes:
       - ./${WORKSPACE}:${USERHOME}/${WORKSPACE}   # 현재 디렉토리 기본으로 연결 //원하는 경로로 바꿀 수 있음
+      - ./${WORKSPACE_TB}:${USERHOME}/${WORKSPACE_TB}
       - ~/.ssh:${USERHOME}/.ssh  # 홈디렉토리에 있는 .ssh 연결
       - /tmp/.X11-unix:/tmp/.X11-unix:rw   # 디스플레이 연결 (GUI 프로그램 실행하기 위해)
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - /sys:/sys:ro ## network관련
+      - /var/run/dbus:/var/run/dbus:ro
       - /dev:/dev  #usb등의 장치 연결
-      # - /opt/ros/noetic:/opt/ros/noetic:ro  # host com의 noetic 연결 테스트
-    # ports:
-    #   - "11311:11311"
+    ports:
+      - "${API_PORT}:${API_PORT}" ## for api . check out env
+      - "${WEB_PORT}:${WEB_PORT}" 
     # command:
     ## docker exec를 사용해서 접근하거나 || Dockerfile의 ENTRYPOINT 사용하기 || bash명령어로 setup.bash 읽고 roslaunch실행
     # restart: always  ## when need to restart after reboot (of course it starts always)
-    hostname: ros2-humble
+    network_mode: host
+    hostname: localhost
     stdin_open: true
     privileged: true
     tty: true
-    ## nivia 용 (apt install -y nvidia-docker2 이 설치 후 docker재시작) 없으면 rutime nvidia 인식 못함
-    runtime: nvidia  
     devices:
       - /dev:/dev
     group_add:
@@ -35,5 +36,5 @@ services:
       - QT_X11_NO_MITSHM=1 #nvidia
       - XAUTHORITY=/tmp/.docker.xauth
 
-## Nvidia 그래픽 카드 이용 시 사용 (특히 rviz 안될 때) -  nvidia-docker2 필요함(apt로 설치)
+## Nvidia 그래픽 카드 이용하는 경우 - 특히 rviz 안될 때(xhost 로 안되는 경우) - nvidia-docker2 필요함(apt로 설치)
 # X11로 실행하지말고 Wayland 디스플레이 서버로 실행할 것

@@ -19,18 +19,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # build시 사용 // RUN에서
 ARG USER=docker_humble
 ARG HOME=/home/docker_humble
-ARG WORKSPACE=dr_ros2_ws
+ARG WORKSPACE=docker_ros2_ws
 
 ## scripts 생성 후 복사
-RUN mkdir -p ./scripts/include  
+RUN mkdir -p ./scripts/include
 ## for create user
-COPY ./scripts/create_user.sh ./scripts/
-COPY ./scripts/include/.sr ./scripts/include/open_sr \ 
+COPY ./scripts/create_docker_user.sh ./scripts/
+COPY ./scripts/include/.docker-sr ./scripts/include/read_sr \ 
     ./scripts/include/
-# WORKDIR /
+WORKDIR /
 ## Create user 
-RUN /bin/bash -c "./scripts/create_user.sh"
-## remove unused scripts 
+RUN /bin/bash -c "./scripts/create_docker_user.sh"
+## remove unused scripts (will be copied to HOME again)
 RUN rm -rf ./scripts
 
 # 추후 필요시 파일 mv 및 권한 설정해주기 (현재는 파일 삭제)
@@ -42,4 +42,5 @@ RUN echo "source /opt/ros/humble/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source /usr/share/gazebo/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/${WORKSPACE}/install/setup.bash" >> ${HOME}/.bashrc
 
+## 추후 home에 스크립트 복사는 추후 update 하기
 ## ros2는 roscore 없으므로 따로 실행 없음 - 추후 런치파일 등록
