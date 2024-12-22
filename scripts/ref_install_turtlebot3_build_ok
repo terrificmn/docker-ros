@@ -1,0 +1,26 @@
+#!/bin/bash
+### docker compose build 시 사용할 수 있으나 - test ok (현재 이 버전은 사용하고 있지는 않다.)
+### compose.yml 파일에서 volume 공유를 안 하고 사용할 경우에 사용
+### build 단계에서 host volume 에 디렉토리를 만들거나 수정할 수가 없다.
+### 단, 아래 처럼 build 단계에서 포함시키고 싶을 경우에는 아래코드를 Dockerfile 에 COPY 후 RUN 해주면 된다. 
+
+source ./scripts/include/read_sr
+
+## dependency
+echo $password | sudo -S apt update
+sudo apt install ros-humble-nav2-util ros-humble-nav2-bringup ros-humble-rviz2 -y
+
+## git clone
+tb_ws=${HOME}/turtlebot3_ws
+mkdir -p ${tb_ws}/src
+cd ${tb_ws}/src
+git clone https://github.com/ROBOTIS-GIT/turtlebot3 -b humble-devel
+
+# rosdep
+rosdep update
+cd ${tb_ws}
+echo $password | sudo -S rosdep install --from-paths src --ignore-src --rosdistro humble -yr
+
+# 빌드
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install

@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG USER=docker_humble
 ARG HOME=/home/docker_humble
 ARG WORKSPACE=docker_ros2_ws
+ARG WORKSPACE_TB=docker_ros2_tb_ws
 
 ## scripts 생성 후 복사
 RUN mkdir -p ./scripts/include
@@ -36,11 +37,18 @@ RUN rm -rf ./scripts
 # 추후 필요시 파일 mv 및 권한 설정해주기 (현재는 파일 삭제)
 USER ${USER}
 WORKDIR ${HOME}
+RUN mkdir -p ./scripts/include ./scripts/init-in-a-container/
+COPY ./scripts/install_turtlebot3_dependency ./scripts/
+COPY ./scripts/include/.docker-sr ./scripts/include/read_sr \ 
+    ./scripts/include/
+COPY ./scripts/init-in-a-container/* ./scripts/init-in-a-container/
+RUN /bin/bash -c "./scripts/install_turtlebot3_dependency"
 
 ## 셋업 bash 부분이 
 RUN echo "source /opt/ros/humble/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source /usr/share/gazebo/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/${WORKSPACE}/install/setup.bash" >> ${HOME}/.bashrc
+RUN echo "source ${HOME}/${WORKSPACE_TB}/install/setup.bash" >> ${HOME}/.bashrc
 
 ## 추후 home에 스크립트 복사는 추후 update 하기
 ## ros2는 roscore 없으므로 따로 실행 없음 - 추후 런치파일 등록

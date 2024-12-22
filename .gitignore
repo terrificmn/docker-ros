@@ -1,4 +1,4 @@
-docker_ws
-docker_tb_ws
+docker_ros2_ws
+docker_ros2_tb_ws
 .env
 scripts/include/.docker-sr
