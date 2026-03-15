@@ -1,7 +1,7 @@
 #!/bin/bash
-source ./scripts/include/read_sr
+source ./scripts/myuser/read_sr
 
-echo $password
+# echo $password
 
 useradd -m $USER && \
     echo "$USER:$password" | chpasswd && \

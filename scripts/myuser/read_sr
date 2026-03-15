@@ -1,0 +1,17 @@
+### now this script can be used for 'create_docker_user.sh' in '/' and user home dir.(/home/...)
+if [ `pwd` = "/" ]; then
+    current_path="." ## used for 'docker-compose build'
+else
+    current_path=${HOME}
+fi
+
+i=1
+## 경로 중요.. 현재 docker에서 home인 상태
+while read line || [ -n "$line" ] ; do
+    if [ $i = 2 ]
+    then
+        break;
+    fi
+    password=$line
+    ((i+=1))
+done < $current_path/scripts/myuser/.docker-sr  ## read file # 절대 경로로 변경
