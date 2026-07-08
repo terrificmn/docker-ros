@@ -8,11 +8,13 @@ ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO jazzy
 
 # repository 등록/ ros-humble-desktop 설치 필요 없음 (이미지 자체로 사용)
-## python3 setuptools 버전 낮추기
+## python3 setuptools jazzy 에 맞는 setuptools 버전 확인
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl software-properties-common \
-    ros-dev-tools \ 
+    ros-dev-tools \
     git vim sudo python3-pip \
+    network-manager net-tools inetutils-ping && \
+    python3 -m pip install setuptools==58.2.0 \
     && rm -rf /var/lib/apt/lists/*
 
 # build시 사용 // RUN에서
