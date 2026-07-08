@@ -2,12 +2,11 @@
 COMPOSE_PROJECT_NAME=jazzy-web # 컨테이너 이름 합성: project name 뒤에 container name이 옴
 USER=docker_jazzy
 USERHOME=/home/docker_jazzy
-WORKSPACE=docker_ros2_ws
-WORKSPACE_WEB=docker_ros2_cg_ws
-API_PORT=8008
+WORKSPACE_ROS=docker_ws
+WORKSPACE_WEB=web_ws
 WEB_PORT=8088
-WEB_VITE_PORT=5173 # use 5174 to isolate the port from the host, defaalt 5173
+WEB_VITE_PORT=5173 # use 5174 to isolate the port from the host, default 5173
 MYSQL_ROOT_PWD=mysqlroot
 MYSQL_USER_ID=mysqluser
-MYSQL_USER_PWD=mysqluserpassword
+MYSQL_PWD=mysqluserpassword
 MYSQL_DB_NAME=mysqldb

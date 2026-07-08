@@ -7,20 +7,26 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO jazzy
 
-# repository 등록/ ros-humble-desktop 설치 필요 없음 (이미지 자체로 사용)
-## python3 setuptools jazzy 에 맞는 setuptools 버전 확인
+## FYI: 이전 버전과 달리 python 관련 패키지 설치를 좀 더 까다롭게 확인함. virtual environment를 만들거나 python3-venv 를 설치한 후 
+## system level 에서 사용할 수 있게 --system-site-packages 옵션 및 환경 변수를 예) ## ENV PATH="/opt/ros_venv/bin:$PATH" 설정,
+
+## FYI: 또는 그냥 system-wide 로 사용할 수 있게 간단하게 env 설정 후 사용
+# Tell pip it is okay to install system-wide inside this container
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+### setuptools for jazzy (fully supported with Python 3.12)
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl software-properties-common \
     ros-dev-tools \
     git vim sudo python3-pip \
-    network-manager net-tools inetutils-ping && \
-    python3 -m pip install setuptools==58.2.0 \
+    net-tools inetutils-ping && \
+    python3 -m pip install setuptools==68.1.2 \ 
     && rm -rf /var/lib/apt/lists/*
 
 # build시 사용 // RUN에서
 ARG USER=docker_jazzy
 ARG HOME=/home/docker_jazzy
-ARG WORKSPACE=docker_ros2_ws
+ARG WORKSPACE=docker_ws
 ARG WORKSPACE_WEB=web_ws
 
 ## scripts 생성 후 복사
@@ -43,15 +49,19 @@ RUN mkdir -p ./scripts/myuser ./scripts/dependency
 COPY --chown=1000:1000 ./scripts/myuser/.docker-sr ./scripts/myuser/read_sr \ 
     ./scripts/myuser/
 
-RUN mkdir -p ./lib
-COPY --chown=1000:1000 ./lib ./lib
+RUN mkdir -p ./lib/gpio ./lib/std_cout
+### FYI: --chown, it is recursive by default
+COPY --chown=1000:1000 ./lib/gpio ./lib/gpio
+COPY --chown=1000:1000 ./scripts/dependency/install_gpio.sh ./scripts/dependency/install_gpio.sh
+RUN /bin/bash -c "./scripts/dependency/install_gpio.sh"
+
+COPY --chown=1000:1000 ./lib/std_cout ./lib/std_cout
 COPY --chown=1000:1000 ./scripts/dependency/install_std_cout.sh ./scripts/dependency/install_std_cout.sh
 RUN /bin/bash -c "./scripts/dependency/install_std_cout.sh"
 
-
 ## 셋업 bash 부분이 
-# RUN echo "source /opt/ros/jazzy/setup.bash" >> ${HOME}/.bashrc
-# RUN echo "source ${HOME}/${WORKSPACE}/install/setup.bash" >> ${HOME}/.bashrc
+RUN echo "source /opt/ros/jazzy/setup.bash" >> ${HOME}/.bashrc
+RUN echo "source ${HOME}/${WORKSPACE}/install/setup.bash" >> ${HOME}/.bashrc
 # RUN echo "source ${HOME}/${WORKSPACE_TB}/install/setup.bash" >> ${HOME}/.bashrc
 
 ## 추후 home에 스크립트 복사는 추후 update 하기
