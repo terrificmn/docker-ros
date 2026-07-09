@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # build시 사용 // RUN에서
 ARG USER=docker_jazzy
 ARG HOME=/home/docker_jazzy
+ARG UID=1000
+ARG GID=1000
 ARG WORKSPACE=docker_ws
 ARG WORKSPACE_WEB=web_ws
 
