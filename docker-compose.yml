@@ -42,7 +42,6 @@ services:
     restart: always
     ports: 
       - "${WEB_PORT}:80"
-      - "${WEB_VITE_PORT}:5173" 
     volumes: 
         - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  ## 서버배포시에는 prod ##로컬 개발시는 dev (env)
         - ./${WORKSPACE_WEB}:/var/www/html  # app 디렉토리도 생성한다해서 도커 nginx 서버와 매칭
@@ -81,6 +80,8 @@ services:
     working_dir: /var/www/html/home_monitor
     volumes:
       - ./${WORKSPACE_WEB}:/var/www/html  #이제 php를 app 디렉토리로 연결
+    ports:
+      - "${WEB_VITE_PORT}:5173"
     restart: always
     depends_on:
       - ros2
@@ -89,42 +90,6 @@ services:
       # - "9000:9000"
     networks:
       - ros2-web
-
-  composer:
-    image: composer:latest
-    container_name: ${COMPOSE_PROJECT_NAME}_composer
-    volumes:
-      - ./${WORKSPACE_WEB}:/var/www/html  
-    working_dir: /var/www/html # 컨테이너 어디에 파일들이 있을 지를 결정
-    networks:
-      - ros2-web
-    #$ docker-compose run --rm composer require tailwindcss(필요한라이브러리)
-
-  npm:
-    image: node:latest
-    container_name: ${COMPOSE_PROJECT_NAME}_npm
-    volumes: 
-      - ./${WORKSPACE_WEB}:/var/www/html
-    working_dir: /var/www/html/home_monitor ## project
-    networks:
-      - ros2-web
-    # entrypoint: ['npm']  ## npm 컨테이너에서 다른 명령어를 쳐야할 경우 주석을 해제하고 docker compose up을 다시한다 (예 npm 명령어로 시작하는 경우가 아닌 경우: npx)
-    # $ docker-compose run -rm npm install
-  
-  # artisan:
-  #   build:
-  #     context: .
-  #     dockerfile: php.Dockerfile
-  #   container_name: ${COMPOSE_PROJECT_NAME}_artisan
-  #   volumes:
-  #     - ./${WORKSPACE_WEB}:/var/www/html
-  #   depends_on: # dependency 필요 
-  #     - mysql
-  #   working_dir: /var/www/html
-  #   entrypoint: ['php', '/var/www/html/artisan'] # Added 'php' before '/var/www/html/artisan'
-  #   networks: 
-  #     - ros2-web
-    # docker-compose run --rm artisan migrate 로 하면 된다!
 
 networks:
   ros2-web:
