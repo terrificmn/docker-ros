@@ -34,3 +34,22 @@ docker compose up
 docker exec -it ros2 bash
 ```
 > ros2 대신에 컨테이너 이름
+
+
+## 최초 docker 빌드 시
+1. docker-sr 설정
+
+2. .env 설정
+
+3. build & up 후 생성된 workspace 권한 변경
+일단 docker_ws 는 유저로 통일 $USER:$UESR
+(mysqldata 는 변경하지 않는다.)
+
+home_monitor는 sudo chown $USER:33 -R home_monitor/
+
+구조
+docker_ws 이하 camera_pub_cpp  servo_ros
+
+web_ws 이하 home_monitor
+
+
