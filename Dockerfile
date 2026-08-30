@@ -19,7 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl software-properties-common \
     ros-dev-tools \
     git vim sudo python3-pip \
-    net-tools inetutils-ping && \
+    net-tools inetutils-ping \
+    ros-jazzy-rosbridge-server \
+    ros-jazzy-rosbridge-suite \
+    ros-jazzy-image-transport-plugins && \
     python3 -m pip install setuptools==68.1.2 \ 
     && rm -rf /var/lib/apt/lists/*
 
