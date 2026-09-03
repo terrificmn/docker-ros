@@ -1,0 +1,11 @@
+services: 
+
+  ros2:
+    # Here, command and restart are what I need
+    command: ["tail", "-f", "/dev/null"] # dev
+    restart: no
+
+# Compose merges original docker-compose.yml and this docker-compose-dev.yml
+# docker compose -f docker-compose.yml -f docker-compose-dev.yaml up (-d)
+# these are overriden
+## docker compose -f docker-compose.yml -f docker-compose-dev.yaml exec -it ros2 bash

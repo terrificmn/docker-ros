@@ -64,10 +64,13 @@ COPY --chown=1000:1000 ./lib/std_cout ./lib/std_cout
 COPY --chown=1000:1000 ./scripts/dependency/install_std_cout.sh ./scripts/dependency/install_std_cout.sh
 RUN /bin/bash -c "./scripts/dependency/install_std_cout.sh"
 
+COPY --chown=${UID}:${GID} ./scripts/entry/ros_entrypoint.sh ./ros_entrypoint.sh
+
 ## 셋업 bash 부분이 
 RUN echo "source /opt/ros/jazzy/setup.bash" >> ${HOME}/.bashrc
 RUN echo "source ${HOME}/${WORKSPACE}/install/setup.bash" >> ${HOME}/.bashrc
 # RUN echo "source ${HOME}/${WORKSPACE_TB}/install/setup.bash" >> ${HOME}/.bashrc
 
+ENTRYPOINT [ "./ros_entrypoint.sh" ]
 ## 추후 home에 스크립트 복사는 추후 update 하기
 ## ros2는 roscore 없으므로 따로 실행 없음 - 추후 런치파일 등록
