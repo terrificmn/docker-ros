@@ -1,4 +1,4 @@
-FROM osrf/ros:jazzy-desktop
+FROM arm64v8/ros:jazzy-ros-base
 
 # geographic area choice disable
 ENV DEBIAN_FRONTEND noninteractive
@@ -16,6 +16,7 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ### setuptools for jazzy (fully supported with Python 3.12)
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-jazzy-desktop-full \
     curl software-properties-common \
     ros-dev-tools \
     git vim sudo python3-pip \
