@@ -4,10 +4,10 @@
 source ./scripts/myuser/read_sr
 
 cd ~/lib/std_cout
-tar xvf std_cout_v1.2.3_ubuntu20.tar.xz
+tar xvf std_cout_v1.2.3_debian11_arm64.tar.xz
 
-cd ready-install
+cd std_cout_install
 
 echo $password | sudo -S ./gether.sh install
 
-echo "install std_cout finished if there is no error."
+echo "std_cout has been installed. (unless there is an error)"
