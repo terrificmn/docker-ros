@@ -1,4 +1,5 @@
-FROM arm64v8/ros:jazzy-ros-base
+FROM ros:jazzy-ros-base 
+# it's okay to remove the arm64v8/ros:... because it's multi-architecture
 
 # geographic area choice disable
 ENV DEBIAN_FRONTEND noninteractive
@@ -16,15 +17,15 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ### setuptools for jazzy (fully supported with Python 3.12)
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-jazzy-desktop-full \
     curl software-properties-common \
     ros-dev-tools \
     git vim sudo python3-pip \
     net-tools inetutils-ping \
     ros-jazzy-rosbridge-server \
     ros-jazzy-rosbridge-suite \
-    ros-jazzy-image-transport-plugins && \
-    python3 -m pip install setuptools==68.1.2 \ 
+    ros-jazzy-image-transport-plugins \
+    ros-jazzy-rviz2 ros-jazzy-rqt ros-jazzy-rqt-common-plugins \
+    && python3 -m pip install setuptools==68.1.2 \ 
     && rm -rf /var/lib/apt/lists/*
 
 # build시 사용 // RUN에서
