@@ -34,6 +34,7 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
       - QT_X11_NO_MITSHM=1 #nvidia
       - XAUTHORITY=/tmp/.docker.xauth
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
     networks:
       - ros2-web
 
