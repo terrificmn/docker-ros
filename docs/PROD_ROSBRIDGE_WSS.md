@@ -10,30 +10,32 @@ browser --wss://luhana.ddns.net/rosbridge/?token=SECRET--> nginx:443 (token chec
 ```
 
 Router port 80 is unusable (gateway admin), so the TLS certificate is issued
-via TLS-ALPN-01 on port 443. Renewals restart nginx for a few seconds
-(~every 60 days).
+with the TLS-ALPN-01 challenge on port 443 via `lego` (a static Go binary;
+note: certbot's standalone mode does NOT support that challenge). Renewals
+briefly restart nginx (~every 60 days; a weekly cron check restarts only
+when a renewal is actually due).
 
 ## One-time setup (on prod)
 
 Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
 
-1. Install certbot (Ubuntu/Debian):
+1. Install lego (static binary, incl. aarch64):
    ```bash
-   sudo snap install --classic certbot
-   sudo ln -sf /snap/bin/certbot /usr/bin/certbot
+   VER=$(curl -sL https://api.github.com/go-acme/lego/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+   echo "installing lego $VER"
+   curl -sL "https://github.com/go-acme/lego/releases/download/${VER}/lego_${VER}_linux_arm64.tar.gz" -o /tmp/lego.tgz
+   tar -xzf /tmp/lego.tgz -C /tmp lego && sudo install -m 0755 /tmp/lego /usr/local/bin/lego
+   lego --version
    ```
 
 2. Issue the certificate. Port 443 must be free, so run this BEFORE
    bringing up the prod overlay (base compose has no 443 mapping):
    ```bash
-   sudo certbot certonly --standalone --preferred-challenges tls-alpn \
-     -d luhana.ddns.net -m you@example.com --agree-tos --no-eff-email \
-     --pre-hook "docker stop jazzy-web_nginx" \
-     --post-hook "docker start jazzy-web_nginx"
+   sudo /usr/local/bin/lego --email="you@example.com" --domains="luhana.ddns.net" \
+     --tls --path="/srv/lego" run
    ```
-   (Hooks are saved and re-run at each renewal. If your prod containers
-   are not named `jazzy-web_*`, adjust the hook commands; check `docker ps`.)
-   Renewals are automatic (snap runs `certbot renew` twice a day).
+   Use your real email (expiry warnings). Files land in
+   `/srv/lego/certificates/`.
 
 3. Generate the proxy conf + token:
    ```bash
@@ -55,7 +57,8 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
    ```bash
    docker exec jazzy-web_php bash -c "cd /var/www/html/home_monitor && npm run build"
    ```
-   (Container name as above: adjust if yours differs.)
+   (If your prod containers are not named `jazzy-web_*`, check `docker ps`
+   and adjust.)
 
 6. Verify:
    ```bash
@@ -70,6 +73,19 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
 
 7. Router: DELETE the `9090` forwarding rule. Keep `443 -> 443`
    (required, also for renewals) and `8000 -> 8000` (the page).
+
+8. Renewal cron (weekly check, restarts nginx only when the cert is
+   within 30 days of expiry):
+   ```bash
+   sudo crontab -e
+   # add (adjust path to this repo):
+   0 3 * * 0 /home/YOU/docker-jazzy-home/scripts/renew-rosbridge-cert.sh luhana.ddns.net you@example.com
+   ```
+   Test it once (should print "cert fresh, nothing to do" and NOT
+   restart nginx):
+   ```bash
+   sudo scripts/renew-rosbridge-cert.sh luhana.ddns.net you@example.com
+   ```
 
 ## Ongoing deploys
 
@@ -92,3 +108,18 @@ update prod `VITE_ROSBRIDGE_URL`, rebuild.
   Laravel login. A fully session-bound proxy is possible future work.
 - `127.0.0.1:9090` binding is kept for local debugging (`wscat`, `curl`
   from the prod host itself).
+
+## Troubleshooting
+
+- `nginx: [emerg] cannot load certificate ... No such file`:
+  the certificate was never issued (or was issued for another name).
+  Restore the page with the base compose file, issue the cert, then
+  re-enable the overlay:
+  ```bash
+  docker compose -f docker-compose.yml up -d web   # page back, no 443 yet
+  sudo ls /srv/lego/certificates/                  # must show luhana.ddns.net.crt
+  # ... re-run step 2, then:
+  docker compose up -d                              # overlay back on
+  ```
+- `sudo: unable to resolve host ...`: harmless (missing /etc/hosts entry).
+  Optional fix: `echo "127.0.0.1 $(hostname)" | sudo tee -a /etc/hosts`.

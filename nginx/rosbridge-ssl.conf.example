@@ -5,8 +5,8 @@ server {
     listen 443 ssl;
     server_name luhana.ddns.net;
 
-    ssl_certificate /etc/letsencrypt/live/luhana.ddns.net/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/luhana.ddns.net/privkey.pem;
+    ssl_certificate /srv/lego/certificates/luhana.ddns.net.crt;
+    ssl_certificate_key /srv/lego/certificates/luhana.ddns.net.key;
     ssl_protocols TLSv1.2 TLSv1.3;
 
     access_log /var/log/nginx/rosbridge_ssl.log;

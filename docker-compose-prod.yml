@@ -8,4 +8,4 @@ services:
       - "443:443"
     volumes:
       - ./nginx/rosbridge-ssl.conf:/etc/nginx/conf.d/rosbridge-ssl.conf:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /srv/lego:/srv/lego:ro
