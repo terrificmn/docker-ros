@@ -14,7 +14,7 @@ services:
       - /var/run/dbus:/var/run/dbus:ro
       - /dev:/dev  #usb등의 장치 연결
     ports:
-      - "${WEB_BRIDGE_SOCKET_PORT}:9090"
+      - "127.0.0.1:${WEB_BRIDGE_SOCKET_PORT}:9090"  # localhost-only: rosbridge has no auth
     command:
       ["ros2", "launch", "servo_motor_ros2", "full_system.launch.py"]
     restart: always  ## when need to restart after reboot (of course it starts always)

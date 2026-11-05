@@ -1,0 +1,35 @@
+# Prod-only: TLS + token-auth proxy for rosbridge (wss://luhana.ddns.net/rosbridge/).
+# Generated from this template by scripts/setup-rosbridge-ssl.sh -> nginx/rosbridge-ssl.conf
+# (generated file is gitignored, DO NOT COMMIT it: it contains the secret token).
+server {
+    listen 443 ssl;
+    server_name luhana.ddns.net;
+
+    ssl_certificate /etc/letsencrypt/live/luhana.ddns.net/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/luhana.ddns.net/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    access_log /var/log/nginx/rosbridge_ssl.log;
+    error_log /var/log/nginx/rosbridge_ssl_error.log;
+
+    location = /rosbridge { return 301 /rosbridge/$is_args$args; }
+
+    location /rosbridge/ {
+        # Shared-secret token (baked into frontend VITE_ROSBRIDGE_URL, see runbook).
+        if ($arg_token != "TOKEN_PLACEHOLDER") { return 403; }
+
+        proxy_pass http://ros2:9090/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # rosbridge connections are long-lived; defaults (60s) would drop idle streams.
+        proxy_buffering off;
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+    }
+
+    location / { return 404; }
+}

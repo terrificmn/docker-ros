@@ -1,0 +1,11 @@
+# Prod overlay: expose 443 for the rosbridge wss proxy (see docs/PROD_ROSBRIDGE_WSS.md).
+# Usage: docker compose -f docker-compose.yml -f docker-compose-prod.yml up -d
+# Or set COMPOSE_FILE=docker-compose.yml:docker-compose-prod.yml in prod .env,
+# then plain `docker compose up -d` picks up both files.
+services:
+  web:
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/rosbridge-ssl.conf:/etc/nginx/conf.d/rosbridge-ssl.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
