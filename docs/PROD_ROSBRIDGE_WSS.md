@@ -27,6 +27,7 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
    tar -xzf /tmp/lego.tgz -C /tmp lego && sudo install -m 0755 /tmp/lego /usr/local/bin/lego
    lego --version
    ```
+*lego version 5.6.0 linux/arm64*  
 
 2. Issue the certificate. Port 443 must be free, so run this BEFORE
    bringing up the prod overlay (base compose has no 443 mapping):
@@ -37,11 +38,14 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
    Use your real email (expiry warnings). Files land in
    `/srv/lego/certificates/`.
 
+   참고로 sudo  ls /srv/lego/certificates 해보면 key, crt 파일들이 있어야 한다.  
+
 3. Generate the proxy conf + token:
    ```bash
    ./scripts/setup-rosbridge-ssl.sh
    ```
-   Copy the printed `VITE_ROSBRIDGE_URL`.
+   Copy the printed `VITE_ROSBRIDGE_URL`.  
+   여기에서 나온 token 을 사용해야 한다. 이후 npm 빌드까지 해준다.  
 
 4. Enable the prod overlay permanently (parent repo `.env` on prod):
    ```bash
@@ -69,6 +73,7 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
    curl -sk -o /dev/null -w "good token, plain GET: %{http_code} (want 400 from rosbridge)\n" \
      "https://luhana.ddns.net/rosbridge/?token=<token>"
    ```
+   여기에서는 403, 403, 400 이 나와야 한다.  
    Then open the camera page remotely and confirm it connects.
 
 7. Router: DELETE the `9090` forwarding rule. Keep `443 -> 443`
