@@ -19,11 +19,11 @@ when a renewal is actually due).
 
 Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
 
-1. Install lego (static binary, incl. aarch64):
+1. Install lego v5.6.0 (static binary, incl. aarch64; `-f` makes curl
+   fail loudly instead of saving an error page):
    ```bash
-   VER=$(curl -sL https://api.github.com/go-acme/lego/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
-   echo "installing lego $VER"
-   curl -sL "https://github.com/go-acme/lego/releases/download/${VER}/lego_${VER}_linux_arm64.tar.gz" -o /tmp/lego.tgz
+   curl -fSL "https://github.com/go-acme/lego/releases/download/v5.6.0/lego_v5.6.0_linux_arm64.tar.gz" -o /tmp/lego.tgz
+   tar -tzf /tmp/lego.tgz
    tar -xzf /tmp/lego.tgz -C /tmp lego && sudo install -m 0755 /tmp/lego /usr/local/bin/lego
    lego --version
    ```
@@ -31,8 +31,8 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
 2. Issue the certificate. Port 443 must be free, so run this BEFORE
    bringing up the prod overlay (base compose has no 443 mapping):
    ```bash
-   sudo /usr/local/bin/lego --email="you@example.com" --domains="luhana.ddns.net" \
-     --tls --path="/srv/lego" run
+   sudo /usr/local/bin/lego run --email="you@example.com" --domains="luhana.ddns.net" \
+     --tls --path="/srv/lego" --accept-tos
    ```
    Use your real email (expiry warnings). Files land in
    `/srv/lego/certificates/`.
@@ -81,8 +81,7 @@ Prereqs: router forwards `443 -> 443` to prod; this repo pulled on prod.
    # add (adjust path to this repo):
    0 3 * * 0 /home/YOU/docker-jazzy-home/scripts/renew-rosbridge-cert.sh luhana.ddns.net you@example.com
    ```
-   Test it once (should print "cert fresh, nothing to do" and NOT
-   restart nginx):
+   Test it once (should report no renewal is due and NOT restart nginx):
    ```bash
    sudo scripts/renew-rosbridge-cert.sh luhana.ddns.net you@example.com
    ```
